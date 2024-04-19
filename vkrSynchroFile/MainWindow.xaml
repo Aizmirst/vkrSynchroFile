@@ -1,0 +1,64 @@
+﻿<Window x:Class="vkrSynchroFile.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:vkrSynchroFile"
+        mc:Ignorable="d"
+        Title="SynchroFile" Height="450" Width="800" MinHeight="280" MinWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая часть -->
+        <Grid Grid.Column="0">
+            <Button Content="Создать профиль" Margin="15,40,15,0" Height="30" VerticalAlignment="Top" Click="CreateProfileButton_Click"/>
+            <Button Content="Изменить профиль" Margin="15,90,15,0" Height="30" VerticalAlignment="Top" Click="ChangeProfileButton_Click"/>
+            <Button Content="Удалить профиль" Margin="15,140,15,0" Height="30" VerticalAlignment="Top" Click="DeleteProfileButton_Click"/>
+            <Button Content="Синхронизировать" Margin="15,0,15,20" Height="30" VerticalAlignment="Bottom" Click="SynchroFileButton"/>
+        </Grid>
+
+        <!-- Правая часть -->
+        <Grid Grid.Column="1">
+            <!-- Список -->
+            <ListBox x:Name="itemListBox"
+                 SelectionMode="Single" Margin="40,40,20,20">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <!-- В этой части вы можете кастомизировать отображение элементов списка -->
+                        <StackPanel>
+                            <!-- Привязка данных к отображаемым свойствам -->
+                            <TextBlock Text="{Binding text}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button Name="copiedTextButton" Click="CopyRowButton_Click" Margin="40,10,0,0" HorizontalAlignment="Left" Width="360" Height="25" VerticalAlignment="Top">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <!-- Триггер для изменения цвета текста кнопки при наведении курсора -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                Ваш идентефикатор:
+            </Button>
+
+            <!-- Кнопка "Обновить таблицу" в плавом верхнем углу -->
+            <Button Content="Обновить таблицу" VerticalAlignment="Top" Margin="0,10,20,0" HorizontalAlignment="Right" Width="148" Click="TableUpdateButton"/>
+        </Grid>
+    </Grid>
+</Window>
