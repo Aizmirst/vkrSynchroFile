@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Net;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
+using System.Text.Json;
+using System.Diagnostics;
 
 namespace vkrSynchroFile
 {
@@ -38,7 +40,11 @@ namespace vkrSynchroFile
                 };
 
                 // Преобразование объекта запроса в JSON
-                string requestData = JsonConvert.SerializeObject(request);
+                string requestData = JsonSerializer.Serialize(request);
+
+                // Получение длины сообщения в байтах
+                byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
 
                 // Отправка JSON на сервер
                 byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
@@ -92,11 +98,17 @@ namespace vkrSynchroFile
             while (totalBytesRead < messageLength)
             {
                 int bytesRead = stream.Read(messageData, totalBytesRead, messageLength - totalBytesRead);
+                if (bytesRead == 0)
+                {
+                    // Если чтение вернуло 0 байт, значит соединение закрыто
+                    break;
+                }
                 totalBytesRead += bytesRead;
             }
 
             // Преобразование JSON в объект запроса
-            Request request = JsonConvert.DeserializeObject<Request>(Encoding.UTF8.GetString(messageData));
+            Request request = JsonSerializer.Deserialize<Request>(messageData);
+
 
             // Обработка запроса в зависимости от его типа
             if (request.Type == "Message")

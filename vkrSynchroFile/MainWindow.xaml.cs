@@ -56,6 +56,7 @@ namespace vkrSynchroFile
                     dbMySQL.insertDB(GetLocalIPAddress(), uniqueId);
                     // Сохранение уникального идентификатора в файле
                     File.WriteAllText(FirstRunFlagFileName, uniqueId);
+                    copiedTextButton.Content = $"Ваш идентефикатор: {uniqueId}";
                 }
             }
             else
