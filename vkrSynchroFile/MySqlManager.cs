@@ -43,7 +43,7 @@ namespace vkrSynchroFile
 
         public bool searchDB(string uid)
         {
-            string sql = @"SELECT 'id' FROM 'Identifiers' WHERE 'uniqueID' = @uniqueID";
+            string sql = @"SELECT `id` FROM `Identifiers` WHERE `uniqueID` = @uniqueID";
             connection.Open();
             MySqlCommand cmd = new MySqlCommand(sql, connection);
             cmd = new MySqlCommand(sql, connection);
