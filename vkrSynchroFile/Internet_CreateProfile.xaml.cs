@@ -78,6 +78,7 @@ namespace vkrSynchroFile
 
         string userInput;
         bool userStatus;
+        string userIP;
 
         private void UserSelectClick(object sender, RoutedEventArgs e)
         {
@@ -88,6 +89,7 @@ namespace vkrSynchroFile
             // Получите введенный пользователем текст после закрытия окна
             userInput = dialog.UserInput;
             userStatus = dialog.userStatus;
+            userIP = dialog.userIP;
 
             if (userStatus)
             {

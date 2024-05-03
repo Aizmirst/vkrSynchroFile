@@ -19,6 +19,7 @@ namespace vkrSynchroFile
     {
         public string UserInput { get; private set; }
         public bool userStatus { get; private set; }
+        public string userIP { get; private set; }
 
         public InputUserIDWindow()
         {
@@ -37,9 +38,9 @@ namespace vkrSynchroFile
                 MySqlManager myDB = new MySqlManager();
                 if (myDB.searchDB(UserInput))
                 {
-                    string ip = myDB.searchIP_DB(UserInput);
+                    userIP = myDB.searchIP_DB(UserInput);
                     InternetNetwork internetNetwork = new InternetNetwork();
-                    userStatus = internetNetwork.PingDevice(ip);
+                    userStatus = internetNetwork.PingDevice(userIP);
                     Close();
                 }
                 else
