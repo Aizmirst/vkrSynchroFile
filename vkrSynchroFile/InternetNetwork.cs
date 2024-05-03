@@ -33,69 +33,116 @@ namespace vkrSynchroFile
             {
                 return false;
             }
-            /*try
-            {
-                // Создание объекта для отправки ICMP-запроса (ping)
-                Ping pingSender = new Ping();
-
-                // Отправка ICMP-запроса на указанный IP-адрес
-                PingReply reply = pingSender.Send(ipAddress);
-
-                // Проверка статуса ответа
-                // Если статус равен IPStatus.Success, то удаленное устройство доступно
-                return reply.Status == IPStatus.Success;
-            }
-            catch (Exception ex)
-            {
-                // В случае возникновения ошибки выводим сообщение об ошибке
-                Console.WriteLine("Ошибка при выполнении ping: " + ex.Message);
-                return false; // Возвращаем false, так как не удалось выполнить ping
-            }*/
         }
 
-        public void SendProfile(string ip, string uid)
+        // Подтверждение создания профиля
+        public void AcceptProfile(string ip, string uid, string profUID)
         {
             try
             {
-                // IP-адрес и порт сервера, к которому мы хотим подключиться
-                string serverIP = ip; // Замените на IP-адрес вашего сервера
-                int serverPort = 12345; // Замените на порт вашего сервера
-
-                // Создание экземпляра TcpClient для подключения к серверу
-                TcpClient client = new TcpClient(serverIP, serverPort);
-
-                // Получаем поток для передачи данных
-                NetworkStream stream = client.GetStream();
-
-                // Создание объекта запроса для отправки сообщения
-                Request request = new Request
+                if (PingDevice(ip))
                 {
-                    Type = "ProfileRequest",
-                    uid = uid,
-                    Message = "Привет, сервер!"
-                };
+                    // IP-адрес и порт сервера, к которому мы хотим подключиться
+                    string serverIP = ip; // Замените на IP-адрес вашего сервера
+                    int serverPort = 12345; // Замените на порт вашего сервера
 
-                // Преобразование объекта запроса в JSON
-                string requestData = JsonSerializer.Serialize(request);
+                    // Создание экземпляра TcpClient для подключения к серверу
+                    TcpClient client = new TcpClient(serverIP, serverPort);
 
-                // Получение длины сообщения в байтах
-                byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
-                stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+                    // Получаем поток для передачи данных
+                    NetworkStream stream = client.GetStream();
 
-                // Отправка JSON на сервер
-                byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
-                stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+                    // Создание объекта запроса для отправки сообщения
+                    Request request = new Request
+                    {
+                        Type = 2,
+                        uid = myUID,
+                        profileUID = profUID
+                    };
+
+                    // Преобразование объекта запроса в JSON
+                    string requestData = JsonSerializer.Serialize(request);
+
+                    // Получение длины сообщения в байтах
+                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                    // Отправка JSON на сервер
+                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
 
 
-                // Ждем подтверждение от сервера
-                byte[] buffer = new byte[256];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");
+                    /*// Ждем подтверждение от сервера
+                    byte[] buffer = new byte[256];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
 
-                // Закрываем соединение
-                stream.Close();
-                client.Close();
+                    // Закрываем соединение
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Устройство недоступно.", "Ошибка");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+            }
+        }
+
+        // Отправка запроса на второе устройство для создания профиля
+        public void SendProfile(string ip)
+        {
+            try
+            {
+                if (PingDevice(ip))
+                {
+                    // IP-адрес и порт сервера, к которому мы хотим подключиться
+                    string serverIP = ip; // Замените на IP-адрес вашего сервера
+                    int serverPort = 12345; // Замените на порт вашего сервера
+
+                    // Создание экземпляра TcpClient для подключения к серверу
+                    TcpClient client = new TcpClient(serverIP, serverPort);
+
+                    // Получаем поток для передачи данных
+                    NetworkStream stream = client.GetStream();
+
+                    // Создание объекта запроса для отправки сообщения
+                    Request request = new Request
+                    {
+                        Type = 1,
+                        uid = myUID
+                    };
+
+                    // Преобразование объекта запроса в JSON
+                    string requestData = JsonSerializer.Serialize(request);
+
+                    // Получение длины сообщения в байтах
+                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                    // Отправка JSON на сервер
+                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+
+                    /*// Ждем подтверждение от сервера
+                    byte[] buffer = new byte[256];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
+
+                    // Закрываем соединение
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Устройство недоступно.", "Ошибка");
+                }
             }
             catch (Exception ex)
             {
@@ -105,11 +152,13 @@ namespace vkrSynchroFile
 
         private const int port = 12345;
         private TcpListener server;
+        private string myUID;
 
-        public void StartServer()
+        public void StartServer(string myUID)
         {
             server = new TcpListener(IPAddress.Any, 12345); // Создание TcpListener
             server.Start(); // Запуск прослушивания
+            this.myUID = myUID;
             Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
             // Начать асинхронное принятие входящих соединений
@@ -152,18 +201,24 @@ namespace vkrSynchroFile
                 Request request = JsonSerializer.Deserialize<Request>(messageData);
 
                 // Обработка запроса в зависимости от его типа
-                if (request.Type == "ProfileRequest")
+                //ProfileRequest
+                if (request.Type == 1)
                 {
+                    Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder(request.uid);
+                    internet_SelectSecondFolder.ShowDialog();
                     // Вывод сообщения в MessageBox
-                    MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                else if (request.Type == "ProfileReply")
+                //ProfileReply
+                else if (request.Type == 2)
                 {
+                    MessageBox.Show($"Профиль подтверждён {request.uid}, {request.profileUID}");
                     // Обработка файла
                     //byte[] fileContent = request.FileData;
                     // Далее ваша обработка файла...
                 }
-                else if (request.Type == "File")
+                //File
+                else if (request.Type == 3)
                 {
                     // Обработка файла
                     //byte[] fileContent = request.FileData;
@@ -177,7 +232,7 @@ namespace vkrSynchroFile
             }
 
             // Отправка подтверждения клиенту
-            SendConfirmation(client);
+            //SendConfirmation(client);
 
             stream.Close();
             client.Close();

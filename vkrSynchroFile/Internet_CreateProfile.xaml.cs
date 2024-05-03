@@ -22,9 +22,11 @@ namespace vkrSynchroFile
     /// </summary>
     public partial class Internet_CreateProfile : Window
     {
-        public Internet_CreateProfile()
+        private string uid;
+        public Internet_CreateProfile(string uid)
         {
             InitializeComponent();
+            this.uid = uid;
         }
 
         private void centerRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -95,38 +97,28 @@ namespace vkrSynchroFile
             {
                 foldere2Info.Text = $"Идентификатор устройства: {userInput};\nСтатус: Недоступен.";
             }
-
-            /*if (folderBrowserDialog.ShowDialog(this).GetValueOrDefault())
-            {
-                string selectedFolder = folderBrowserDialog.SelectedPath;
-
-                if (Directory.Exists(selectedFolder))
-                {
-                    string[] folderInfo = GetFolderInfo(selectedFolder);
-                    folder2name = folderInfo[0];
-                    folder2path = folderInfo[1];
-                    foldere2Info.Text = $"Идентификатор устройства: {folderInfo[0]};\nСтатус: {folderInfo[1]}.";
-                }
-            }*/
         }
 
         private void CreateProfileClick(object sender, RoutedEventArgs e)
         {
 
-            /*if (folder1name != null && folder2name != null)
+            if (folder1name != null && userStatus)
             {
-                SQLiteManager db = new SQLiteManager();
+                InternetNetwork internetNetwork = new InternetNetwork();
+                internetNetwork.SendProfile(userIP);
+                /*SQLiteManager db = new SQLiteManager();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
                 DirectoryInfo directoryInfo2 = new DirectoryInfo(folder2path);
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
                 db.insertDB(synhroMode, directoryInfo1.Name, directoryInfo1.FullName, directoryInfo1.LastWriteTime, directoryInfo1.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length),
                     directoryInfo2.Name, directoryInfo2.FullName, directoryInfo2.LastWriteTime, directoryInfo2.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length));
+                this.Close();*/
                 this.Close();
             }
             else
             {
                 MessageBox.Show("Ошибка!");
-            }*/
+            }
         }
 
         public string[] GetFolderInfo(string folderPath)

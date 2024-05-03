@@ -8,10 +8,11 @@ namespace vkrSynchroFile
 {
     public class Request
     {
-        public string Type { get; set; }
+        public int Type { get; set; }
 
         public string uid { get; set; }
         public string Message { get; set; }
+        public string profileUID { get; set; }
         public byte[] FileData { get; set; }
     }
 }

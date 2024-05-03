@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace vkrSynchroFile
 {
-    /// <summary>
-    /// Логика взаимодействия для InputUserIDWindow.xaml
-    /// </summary>
     public partial class InputUserIDWindow : Window
     {
         public string UserInput { get; private set; }
@@ -42,7 +39,6 @@ namespace vkrSynchroFile
                 {
                     string ip = myDB.searchIP_DB(UserInput);
                     InternetNetwork internetNetwork = new InternetNetwork();
-                    //internetNetwork.SendProfile(ip, UserInput);
                     userStatus = internetNetwork.PingDevice(ip);
                     Close();
                 }

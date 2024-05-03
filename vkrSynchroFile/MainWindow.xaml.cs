@@ -39,7 +39,7 @@ namespace vkrSynchroFile
             dbLite = new SQLiteManager();
             dbMySQL = new MySqlManager();
             internetNetwork = new InternetNetwork();
-            internetNetwork.StartServer();
+            internetNetwork.StartServer(uniqueId);
             TableUpdate();
 
             uniqueId = "";
@@ -146,7 +146,7 @@ namespace vkrSynchroFile
                     break;
                 // По инету
                 case 3:
-                    Internet_CreateProfile internet_CreateProfile = new Internet_CreateProfile();
+                    Internet_CreateProfile internet_CreateProfile = new Internet_CreateProfile(uniqueId);
                     internet_CreateProfile.ShowDialog();
                     TableUpdate();
                     break;

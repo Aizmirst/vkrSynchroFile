@@ -22,19 +22,29 @@ namespace vkrSynchroFile
                                         "folder_name TEXT NOT NULL," +
                                         "folder_path TEXT NOT NULL)";
 
-            string createProfilesTable = "CREATE TABLE IF NOT EXISTS Profiles (" +
+            string createPCProfilesTable = "CREATE TABLE IF NOT EXISTS PC_Profiles (" +
                                             "id_profile INTEGER PRIMARY KEY AUTOINCREMENT," +
                                             "folder1 INTEGER NOT NULL," +
                                             "folder2 INTEGER NOT NULL," +
                                             "two_sided BOOLEAN NOT NULL," +
                                             "FOREIGN KEY (folder1) REFERENCES Folders(id_folder)," +
                                             "FOREIGN KEY (folder2) REFERENCES Folders(id_folder))";
+            
+            /*string createInternetProfilesTable = "CREATE TABLE IF NOT EXISTS Internet_Profiles (" +
+                                            "id_profile INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                            "folder1 INTEGER NOT NULL," +
+                                            "id_user TEXT NOT NULL," +
+                                            "two_sided BOOLEAN NOT NULL," +
+                                            "FOREIGN KEY (folder1) REFERENCES Folders(id_folder))";*/
 
             SQLiteCommand command = new SQLiteCommand(createFoldersTable, connection);
             command.ExecuteNonQuery();
 
-            command = new SQLiteCommand(createProfilesTable, connection);
+            command = new SQLiteCommand(createPCProfilesTable, connection);
             command.ExecuteNonQuery();
+            
+            /*command = new SQLiteCommand(createInternetProfilesTable, connection);
+            command.ExecuteNonQuery();*/
             connection.Close();
         }
 
