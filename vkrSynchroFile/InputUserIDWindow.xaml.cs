@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,6 +21,7 @@ namespace vkrSynchroFile
     public partial class InputUserIDWindow : Window
     {
         public string UserInput { get; private set; }
+        public bool userStatus { get; private set; }
 
         public InputUserIDWindow()
         {
@@ -40,7 +42,8 @@ namespace vkrSynchroFile
                 {
                     string ip = myDB.searchIP_DB(UserInput);
                     InternetNetwork internetNetwork = new InternetNetwork();
-                    internetNetwork.SendProfile(ip, UserInput);
+                    //internetNetwork.SendProfile(ip, UserInput);
+                    userStatus = internetNetwork.PingDevice(ip);
                     Close();
                 }
                 else

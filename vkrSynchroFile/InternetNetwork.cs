@@ -11,11 +11,47 @@ using System.Net;
 //using Newtonsoft.Json;
 using System.Text.Json;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace vkrSynchroFile
 {
     internal class InternetNetwork
     {
+
+        public bool PingDevice(string ipAddress)
+        {
+            int port = 12345;
+            try
+            {
+                using (TcpClient client = new TcpClient())
+                {
+                    client.Connect(ipAddress, port);
+                    return true;
+                }
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            /*try
+            {
+                // Создание объекта для отправки ICMP-запроса (ping)
+                Ping pingSender = new Ping();
+
+                // Отправка ICMP-запроса на указанный IP-адрес
+                PingReply reply = pingSender.Send(ipAddress);
+
+                // Проверка статуса ответа
+                // Если статус равен IPStatus.Success, то удаленное устройство доступно
+                return reply.Status == IPStatus.Success;
+            }
+            catch (Exception ex)
+            {
+                // В случае возникновения ошибки выводим сообщение об ошибке
+                Console.WriteLine("Ошибка при выполнении ping: " + ex.Message);
+                return false; // Возвращаем false, так как не удалось выполнить ping
+            }*/
+        }
 
         public void SendProfile(string ip, string uid)
         {
@@ -34,7 +70,7 @@ namespace vkrSynchroFile
                 // Создание объекта запроса для отправки сообщения
                 Request request = new Request
                 {
-                    Type = "Message",
+                    Type = "ProfileRequest",
                     uid = uid,
                     Message = "Привет, сервер!"
                 };
@@ -106,21 +142,38 @@ namespace vkrSynchroFile
                 totalBytesRead += bytesRead;
             }
 
-            // Преобразование JSON в объект запроса
-            Request request = JsonSerializer.Deserialize<Request>(messageData);
 
+            // Проверка, является ли полученный запрос корректным JSON
+            bool isJson = IsValidJson(messageData);
 
-            // Обработка запроса в зависимости от его типа
-            if (request.Type == "Message")
+            if (isJson)
             {
-                // Вывод сообщения в MessageBox
-                MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Преобразование JSON в объект запроса
+                Request request = JsonSerializer.Deserialize<Request>(messageData);
+
+                // Обработка запроса в зависимости от его типа
+                if (request.Type == "ProfileRequest")
+                {
+                    // Вывод сообщения в MessageBox
+                    MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else if (request.Type == "ProfileReply")
+                {
+                    // Обработка файла
+                    //byte[] fileContent = request.FileData;
+                    // Далее ваша обработка файла...
+                }
+                else if (request.Type == "File")
+                {
+                    // Обработка файла
+                    //byte[] fileContent = request.FileData;
+                    // Далее ваша обработка файла...
+                }
             }
-            else if (request.Type == "File")
+            else
             {
-                // Обработка файла
-                //byte[] fileContent = request.FileData;
-                // Далее ваша обработка файла...
+                // Вывод сообщения о пинге или другом некорректном запросе
+                Console.WriteLine("Получен запрос, который не является JSON.");
             }
 
             // Отправка подтверждения клиенту
@@ -132,6 +185,21 @@ namespace vkrSynchroFile
             server.BeginAcceptTcpClient(new AsyncCallback(HandleClient), null);
         }
 
+
+        private bool IsValidJson(byte[] messageData)
+        {
+            try
+            {
+                // Попытка десериализации JSON
+                JsonSerializer.Deserialize<Request>(messageData);
+                return true;
+            }
+            catch (Exception)
+            {
+                // Если десериализация не удалась, запрос не является JSON
+                return false;
+            }
+        }
 
         private void SendConfirmation(TcpClient client)
         {

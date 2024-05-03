@@ -74,8 +74,9 @@ namespace vkrSynchroFile
         }
 
 
-        private string folder2name;
-        private string folder2path;
+        string userInput;
+        bool userStatus;
+
         private void UserSelectClick(object sender, RoutedEventArgs e)
         {
             InputUserIDWindow dialog = new InputUserIDWindow();
@@ -83,8 +84,17 @@ namespace vkrSynchroFile
             dialog.ShowDialog();
 
             // Получите введенный пользователем текст после закрытия окна
-            string userInput = dialog.UserInput;
-            MessageBox.Show(userInput);
+            userInput = dialog.UserInput;
+            userStatus = dialog.userStatus;
+
+            if (userStatus)
+            {
+                foldere2Info.Text = $"Идентификатор устройства: {userInput};\nСтатус: Доступен.";
+            }
+            else
+            {
+                foldere2Info.Text = $"Идентификатор устройства: {userInput};\nСтатус: Недоступен.";
+            }
 
             /*if (folderBrowserDialog.ShowDialog(this).GetValueOrDefault())
             {
@@ -103,7 +113,7 @@ namespace vkrSynchroFile
         private void CreateProfileClick(object sender, RoutedEventArgs e)
         {
 
-            if (folder1name != null && folder2name != null)
+            /*if (folder1name != null && folder2name != null)
             {
                 SQLiteManager db = new SQLiteManager();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
@@ -116,7 +126,7 @@ namespace vkrSynchroFile
             else
             {
                 MessageBox.Show("Ошибка!");
-            }
+            }*/
         }
 
         public string[] GetFolderInfo(string folderPath)
