@@ -14,8 +14,8 @@
 
         <!-- Левая часть -->
         <Grid Grid.Column="0">
-            <Button Content="Выбор папки 1:" Margin="15,20,15,0" Height="30" VerticalAlignment="Top" Click="FolderSelect1Click"/>
-            <Button Content="Выбор папки 2:" Margin="15,70,15,0" Height="30" VerticalAlignment="Top" Click="FolderSelect2Click"/>
+            <Button Content="Выбор папки 1" Margin="15,20,15,0" Height="30" VerticalAlignment="Top" Click="FolderSelect1Click"/>
+            <Button Content="Выбор папки 2" Margin="15,70,15,0" Height="30" VerticalAlignment="Top" Click="FolderSelect2Click"/>
             <Button Content="Сохранить и применить" Margin="15,0,15,20" Height="30" VerticalAlignment="Bottom" Click="CreateProfileClick"/>
         </Grid>
 
@@ -34,13 +34,13 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="upperLeftTextBlock" Text="Папка1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock x:Name="upperLeftTextBlock" Text="Папка 1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                 <TextBlock x:Name="foldere1Info" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20,15,0,0">
                     Имя папки:
                     <LineBreak/>
                     Полный путь:
                 </TextBlock>
-                <TextBlock x:Name="upperRightTextBlock" Text="Папка2" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock x:Name="upperRightTextBlock" Text="Папка 2" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                 <TextBlock x:Name="foldere2Info" TextWrapping="Wrap" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20,15,0,0">
                     Имя папки:
                     <LineBreak/>

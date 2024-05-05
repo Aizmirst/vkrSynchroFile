@@ -11,7 +11,7 @@
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="InputTextBox" MaxLength="36" Margin="20,0,20,0" Height="20" PreviewTextInput="MaskedTextBox_PreviewTextInput"/>
-        <Button Grid.Row="1" Margin="10" Width="80" Height="30" Content="Отправить" Click="SendButton_Click" />
+        <TextBox Grid.Row="0" x:Name="InputTextBox" MaxLength="36" Margin="20,0,20,0" Height="20" PreviewTextInput="MaskedTextBox_PreviewTextInput"/>
+        <Button Grid.Row="1" Width="80" Height="25" Content="Отправить" Click="SendButton_Click" />
     </Grid>
 </Window>

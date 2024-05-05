@@ -349,13 +349,14 @@ namespace vkrSynchroFile
                 //File
                 else if (request.Type == 3)
                 {
-                    MessageBoxResult result = MessageBox.Show($"Получен запрос на удаления профиля {request.profileUID}. \n Вы подтверждаете удаление профиля?", "Удалить профиль?", MessageBoxButton.YesNo);
+                    MessageBoxResult result = MessageBox.Show($"Получен запрос на удаления профиля {request.profileUID}. \n\n\n Вы подтверждаете удаление профиля?", "Удалить профиль?", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
                         SQLiteManager db = new SQLiteManager();
                         db.deleteDB_Internet(request.uid, request.profileUID);
                         Request newRequest = new Request();
                         SendConfirmation(newRequest, client);
+                        mainWindowInstance.TableUpdate();
                     }
                     else
                     {

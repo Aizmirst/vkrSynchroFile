@@ -8,29 +8,27 @@
         Title="Internet_SelectSecondFolder" Height="250" Width="370" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
             <TextBlock x:Name="TitleTextBlock" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0">
-                        Получен запрос на создание профиля.
+                Получен запрос на создание профиля.
+                <LineBreak/>
+                Выберите папку для синхронизации.
             </TextBlock>
         </Grid>
         <Grid Grid.Row="1">
-            <TextBlock x:Name="BaseTextBlock" Text="Выберите папку 2:" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0"/>
-        </Grid>
-        <Grid Grid.Row="2">
-            <TextBlock x:Name="foldereInfo" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,30,0,0">
+            <TextBlock x:Name="foldereInfo" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,15,0,0">
                         Имя папки:
                         <LineBreak/>
                         Полный путь:
             </TextBlock>
-            <Button Content="Выбор папки 1:" Margin="127,77,127,0" Height="30" VerticalAlignment="Top" Click="FolderSelectClick"/>
+            <Button Content="Выбор папки:" Margin="127,77,127,0" Height="25" VerticalAlignment="Top" Click="FolderSelectClick"/>
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
