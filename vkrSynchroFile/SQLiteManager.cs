@@ -330,10 +330,10 @@ namespace vkrSynchroFile
             try
             {
                 // SQL-запрос для выбора значения folder перед удалением записи
-                string selectFolderSql = $"SELECT folder FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profileUID}'";
+                string selectFolderSql = $"SELECT folder FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profUID}'";
 
                 // SQL-запрос для удаления записи
-                string deleteSql = $"DELETE FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profileUID}'";
+                string deleteSql = $"DELETE FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profUID}'";
 
                 // Открытие соединения с базой данных
                 connection.Open();
