@@ -49,8 +49,113 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
-
         public ObservableCollection<ListItem> readDBforTable()
+        {
+            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
+
+            int profileNumber = 1; // Начальное значение номера профиля
+
+            foreach (ListItem item in readDBforTablePC(profileNumber))
+            {
+                items.Add(item);
+                profileNumber++; // Увеличиваем номер профиля на 1
+            }
+            foreach (ListItem item in readDBforTableInternet(profileNumber))
+            {
+                items.Add(item);
+                profileNumber++; // Увеличиваем номер профиля на 1
+            }
+
+            return items;
+
+        }
+
+        private ObservableCollection<ListItem> readDBforTableInternet(int startProfileNumber)
+        {
+            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
+
+            string info = "SELECT " +
+                "p.id_profile, " +
+                "f1.id_folder AS folder1_id, " +
+                "f1.folder_name AS folder1_name, " +
+                "f1.folder_path AS folder1_path, " +
+                "p.id_user," +
+                "p.profile_UID," +
+                "p.two_sided " +
+                "FROM " +
+                "Internet_Profiles p " +
+                "JOIN " +
+                "Folders f1 ON p.folder = f1.id_folder ";
+
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(info, connection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                items.Add(new ListItem()
+                {
+                    profile_id = reader.GetInt32(0),
+                    folder1id = reader.GetInt32(1),
+                    folder1name = reader.GetString(2),
+                    folder1path = reader.GetString(3),
+                    userUID = reader.GetString(4),
+                    profileUID = reader.GetString(5),
+                    text = $"Профиль №{startProfileNumber}. Тип: По сети.",
+                    profType = 3,
+                    profMode = reader.GetBoolean(6)
+                });
+                startProfileNumber++; // Увеличиваем номер профиля на 1
+            }
+            connection.Close();
+            return items;
+        }
+
+        private ObservableCollection<ListItem> readDBforTablePC(int startProfileNumber)
+        {
+            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
+
+            string info = "SELECT " +
+                "p.id_profile, " +
+                "f1.id_folder AS folder1_id, " +
+                "f1.folder_name AS folder1_name, " +
+                "f1.folder_path AS folder1_path, " +
+                "f2.id_folder AS folder2_id, " +
+                "f2.folder_name AS folder2_name, " +
+                "f2.folder_path AS folder2_path, " +
+                "p.two_sided " +
+                "FROM " +
+                "PC_Profiles p " +
+                "JOIN " +
+                "Folders f1 ON p.folder1 = f1.id_folder " +
+                "JOIN " +
+                "Folders f2 ON p.folder2 = f2.id_folder;";
+
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(info, connection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                items.Add(new ListItem()
+                {
+                    profile_id = reader.GetInt32(0),
+                    folder1id = reader.GetInt32(1),
+                    folder1name = reader.GetString(2),
+                    folder1path = reader.GetString(3),
+                    folder2id = reader.GetInt32(4),
+                    folder2name = reader.GetString(5),
+                    folder2path = reader.GetString(6),
+                    text = $"Профиль №{startProfileNumber}. Тип: Внутри 1 ПК.",
+                    profType = 1,
+                    profMode = reader.GetBoolean(7)
+                });
+                startProfileNumber++; // Увеличиваем номер профиля на 1
+            }
+            connection.Close();
+            return items;
+        }
+
+
+        /*public ObservableCollection<ListItem> readDBforTable()
         {
             ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
 
@@ -147,7 +252,7 @@ namespace vkrSynchroFile
             }
             connection.Close();
             return items;
-        }
+        }*/
 
         public void insertDB(bool two_sided, string name1, string path1, DateTime changeTime1, long weight1, string name2, string path2, DateTime changeTime2, long weight2)
         {

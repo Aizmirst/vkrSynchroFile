@@ -39,7 +39,7 @@ namespace vkrSynchroFile
             InitializeComponent();
             dbLite = new SQLiteManager();
             dbMySQL = new MySqlManager();
-            internetNetwork = new InternetNetwork();
+            internetNetwork = new InternetNetwork(this);
             internetNetwork.StartServer();
             TableUpdate();
 
@@ -111,7 +111,7 @@ namespace vkrSynchroFile
             return !File.Exists(FirstRunFlagFileName);
         }
 
-        private void TableUpdate()
+        public void TableUpdate()
         {
             ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
             items = dbLite.readDBforTable();
@@ -194,13 +194,15 @@ namespace vkrSynchroFile
                 {
                     case 1:
                         dbLite.deleteDB(selectedItem.profile_id, selectedItem.folder1id, selectedItem.folder2id);
-                        ((ObservableCollection<ListItem>)itemListBox.ItemsSource).Remove(selectedItem);
-                        //TableUpdate();
+                        //((ObservableCollection<ListItem>)itemListBox.ItemsSource).Remove(selectedItem);
+                        TableUpdate();
                         break;
                     case 2:
                         TableUpdate();
                         break;
                     case 3:
+                        InternetNetwork internetNetwork = new InternetNetwork();
+                        internetNetwork.deleteProfile(selectedItem.userUID, selectedItem.profileUID);
                         TableUpdate();
                         break;
                 }

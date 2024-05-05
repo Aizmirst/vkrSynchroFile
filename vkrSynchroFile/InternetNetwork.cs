@@ -19,6 +19,17 @@ namespace vkrSynchroFile
 {
     internal class InternetNetwork
     {
+        private MainWindow mainWindowInstance; // Поле для хранения ссылки на экземпляр MainWindow
+
+        // Конструктор, который принимает ссылку на экземпляр MainWindow
+        public InternetNetwork(MainWindow mainWindow)
+        {
+            mainWindowInstance = mainWindow;
+        }
+        
+        public InternetNetwork()
+        {
+        }
 
         public bool PingDevice(string ipAddress)
         {
@@ -36,64 +47,6 @@ namespace vkrSynchroFile
                 return false;
             }
         }
-
-        // Подтверждение создания профиля
-        /*public void AcceptProfile(string ip, string profUID)
-        {
-            try
-            {
-                if (PingDevice(ip))
-                {
-                    // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
-
-                    // Создание экземпляра TcpClient для подключения к серверу
-                    TcpClient client = new TcpClient(serverIP, serverPort);
-
-                    // Получаем поток для передачи данных
-                    NetworkStream stream = client.GetStream();
-
-                    // Создание объекта запроса для отправки сообщения
-                    Request request = new Request
-                    {
-                        Type = 2,
-                        uid = myUID,
-                        profileUID = profUID
-                    };
-
-                    // Преобразование объекта запроса в JSON
-                    string requestData = JsonSerializer.Serialize(request);
-
-                    // Получение длины сообщения в байтах
-                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
-                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
-
-                    // Отправка JSON на сервер
-                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
-                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
-
-
-                    *//*// Ждем подтверждение от сервера
-                    byte[] buffer = new byte[256];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*//*
-
-                    // Закрываем соединение
-                    stream.Close();
-                    client.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Устройство недоступно.", "Ошибка");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
-            }
-        }*/
 
         // Отправка запроса на второе устройство для создания профиля
         public Request SendProfile(string ip, bool synhroMode)
@@ -164,6 +117,79 @@ namespace vkrSynchroFile
                 return null;
             }
         }
+
+        public bool deleteProfile(string userUID, string profileUID)
+        {
+            try
+            {
+                MySqlManager myDB = new MySqlManager();
+                if (myDB.searchDB(userUID)){
+                    string ip = myDB.searchIP_DB(userUID);
+
+                    if (PingDevice(ip))
+                    {
+                        // IP-адрес и порт сервера, к которому мы хотим подключиться
+                        string serverIP = ip; // Замените на IP-адрес вашего сервера
+                        int serverPort = 12345; // Замените на порт вашего сервера
+
+                        // Создание экземпляра TcpClient для подключения к серверу
+                        TcpClient client = new TcpClient(serverIP, serverPort);
+
+                        // Получаем поток для передачи данных
+                        NetworkStream stream = client.GetStream();
+                        string myUID = InternetProfileMethods.myUserUID();
+                        // Создание объекта запроса для отправки сообщения
+                        Request request = new Request
+                        {
+                            Type = 2,
+                            uid = myUID,
+                            profileUID = profileUID
+                        };
+
+                        // Преобразование объекта запроса в JSON
+                        string requestData = JsonSerializer.Serialize(request);
+
+                        // Получение длины сообщения в байтах
+                        byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                        stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                        // Отправка JSON на сервер
+                        byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                        stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+                        // Получение и обработка ответа от сервера
+                        Request streamResult = ProcessServerResponse(stream);
+
+                        // Закрываем соединение
+                        stream.Close();
+                        client.Close();
+
+
+                        if (streamResult == null)
+                        {
+                            MessageBox.Show("Создание профиля не одобрено вторым устройством.");
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Устройство недоступно.", "Ошибка");
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+                return false;
+            }
+        }
+
         private Request ProcessServerResponse(NetworkStream stream)
         {
             try
@@ -196,8 +222,6 @@ namespace vkrSynchroFile
                     // Преобразование JSON в объект ответа
                     Request response = JsonSerializer.Deserialize<Request>(messageData);
                     return response;
-
-                    // Обработка ответа...
 
                 }
                 return null;
@@ -281,20 +305,29 @@ namespace vkrSynchroFile
                         internet_SelectSecondFolder.ShowDialog();
                         //MessageBox.Show(internet_SelectSecondFolder.uniqueId);
                         //MessageBox.Show(internet_SelectSecondFolder.folderpath);
-                        MySqlManager myDB = new MySqlManager();
-                        string ip = myDB.searchIP_DB(request.uid);
-
-                        SQLiteManager db = new SQLiteManager();
-                        DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
-                        db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId);
-                        //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
-                        string myUID = InternetProfileMethods.myUserUID();
-                        Request newRequest = new Request
+                        if(internet_SelectSecondFolder.acceptProfile)
                         {
-                            uid = myUID,
-                            profileUID = internet_SelectSecondFolder.uniqueId
-                        };
-                        SendConfirmation(newRequest, client);
+                            MySqlManager myDB = new MySqlManager();
+                            string ip = myDB.searchIP_DB(request.uid);
+
+                            SQLiteManager db = new SQLiteManager();
+                            DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
+                            db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId);
+                            //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
+                            string myUID = InternetProfileMethods.myUserUID();
+                            Request newRequest = new Request
+                            {
+                                uid = myUID,
+                                profileUID = internet_SelectSecondFolder.uniqueId
+                            };
+                            SendConfirmation(newRequest, client);
+                            mainWindowInstance.TableUpdate();
+                        }
+                        else
+                        {
+                            Request newRequest = null;
+                            SendConfirmation(newRequest, client);
+                        }
                     });
                     // Вывод сообщения в MessageBox
                     //MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);

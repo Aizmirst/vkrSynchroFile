@@ -26,6 +26,7 @@ namespace vkrSynchroFile
         public Internet_SelectSecondFolder()
         {
             InitializeComponent();
+            acceptProfile = false;
             //senderUID = uid;
             //Loaded += Internet_SelectSecondFolder_Loaded;
             //TitleTextBlock.Text = $"Получен запрос на создание профиля от пользователя: \n {senderUID}.";
@@ -61,12 +62,14 @@ namespace vkrSynchroFile
 
 
         public string uniqueId { get; private set; }
+        public bool acceptProfile { get; private set; }
 
         private void AcceptClick(object sender, RoutedEventArgs e)
         {
             if (foldername != null)
             {
                 uniqueId = Guid.NewGuid().ToString();
+                acceptProfile = true;
 
                 this.Close();
                 /*MySqlManager myDB = new MySqlManager();
