@@ -21,6 +21,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Path = System.IO.Path;
 
 
@@ -193,7 +194,7 @@ namespace vkrSynchroFile
                 switch (selectedItem.profType)
                 {
                     case 1:
-                        dbLite.deleteDB(selectedItem.profile_id, selectedItem.folder1id, selectedItem.folder2id);
+                        dbLite.deleteDB_PC(selectedItem.profile_id, selectedItem.folder1id, selectedItem.folder2id);
                         //((ObservableCollection<ListItem>)itemListBox.ItemsSource).Remove(selectedItem);
                         TableUpdate();
                         break;
@@ -202,8 +203,12 @@ namespace vkrSynchroFile
                         break;
                     case 3:
                         InternetNetwork internetNetwork = new InternetNetwork();
-                        internetNetwork.deleteProfile(selectedItem.userUID, selectedItem.profileUID);
-                        TableUpdate();
+                        bool deleteCheck = internetNetwork.deleteProfile(selectedItem.userUID, selectedItem.profileUID);
+                        if (deleteCheck)
+                        {
+                            dbLite.deleteDB_Internet(selectedItem.userUID, selectedItem.profileUID);
+                            TableUpdate();
+                        }
                         break;
                 }
             }

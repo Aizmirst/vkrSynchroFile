@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Mysqlx.Crud;
 
 namespace vkrSynchroFile
 {
@@ -141,7 +142,7 @@ namespace vkrSynchroFile
                         // Создание объекта запроса для отправки сообщения
                         Request request = new Request
                         {
-                            Type = 2,
+                            Type = 3,
                             uid = myUID,
                             profileUID = profileUID
                         };
@@ -165,12 +166,16 @@ namespace vkrSynchroFile
                         client.Close();
 
 
-                        if (streamResult == null)
+                        if (streamResult != null)
                         {
-                            MessageBox.Show("Создание профиля не одобрено вторым устройством.");
+                            MessageBox.Show("Профиль удалён.");
+                            return true;
                         }
-
-                        return true;
+                        else
+                        {
+                            MessageBox.Show("Удаление профиля отклонено.");
+                            return false;
+                        }
                     }
                     else
                     {
@@ -283,7 +288,7 @@ namespace vkrSynchroFile
                 Request request = JsonSerializer.Deserialize<Request>(messageData);
 
                 // Обработка запроса в зависимости от его типа
-                //ProfileRequest
+                //Обработка запроса но создание профиля
                 if (request.Type == 1)
                 {
                     //MainWindow.openInternetProfileAccept(request.uid);
@@ -332,7 +337,7 @@ namespace vkrSynchroFile
                     // Вывод сообщения в MessageBox
                     //MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                //ProfileReply
+                // Обработка запроса на удаление профиля
                 else if (request.Type == 2)
                 {
                     //MessageBox.Show(request.uid);
@@ -344,6 +349,19 @@ namespace vkrSynchroFile
                 //File
                 else if (request.Type == 3)
                 {
+                    MessageBoxResult result = MessageBox.Show($"Получен запрос на удаления профиля {request.profileUID}. \n Вы подтверждаете удаление профиля?", "Удалить профиль?", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        SQLiteManager db = new SQLiteManager();
+                        db.deleteDB_Internet(request.uid, request.profileUID);
+                        Request newRequest = new Request();
+                        SendConfirmation(newRequest, client);
+                    }
+                    else
+                    {
+                        Request newRequest = null;
+                        SendConfirmation(newRequest, client);
+                    }
                     // Обработка файла
                     //byte[] fileContent = request.FileData;
                     // Далее ваша обработка файла...

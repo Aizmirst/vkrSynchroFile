@@ -100,7 +100,7 @@ namespace vkrSynchroFile
                     folder1path = reader.GetString(3),
                     userUID = reader.GetString(4),
                     profileUID = reader.GetString(5),
-                    text = $"Профиль №{startProfileNumber}. Тип: По сети.",
+                    text = $"Профиль №{startProfileNumber}. Тип: По сети. UID: {reader.GetString(5)}",
                     profType = 3,
                     profMode = reader.GetBoolean(6)
                 });
@@ -307,14 +307,64 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
-        public void deleteDB(int profId, int fold1Id, int fold2Id)
+        public void deleteDB_PC(int profId, int fold1Id, int fold2Id)
         {
-            deleteProfile(profId);
+            deleteProfilePC(profId);
             deleteFolder(fold1Id);
             deleteFolder(fold2Id);
         }
+        
+        public void deleteDB_Internet(string userUID, string profUID)
+        {
+            int folderID = deleteProfileInternet(userUID, profUID);
+            if (folderID > 0)
+            {
+                deleteFolder(folderID);
+            }
+        }
 
-        private void deleteProfile(int profId)
+        private int deleteProfileInternet(string userUID, string profUID)
+        {
+            int deletedFolderId = -1; // Инициализируем значение переменной folder удаляемой строки
+
+            try
+            {
+                // SQL-запрос для выбора значения folder перед удалением записи
+                string selectFolderSql = $"SELECT folder FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profileUID}'";
+
+                // SQL-запрос для удаления записи
+                string deleteSql = $"DELETE FROM Internet_Profiles WHERE id_user = '{userUID}' AND profile_UID = '{profileUID}'";
+
+                // Открытие соединения с базой данных
+                connection.Open();
+
+                // Получение значения folder перед удалением записи
+                SQLiteCommand selectFolderCmd = new SQLiteCommand(selectFolderSql, connection);
+                object folderObj = selectFolderCmd.ExecuteScalar();
+                if (folderObj != null && folderObj != DBNull.Value)
+                {
+                    deletedFolderId = Convert.ToInt32(folderObj);
+                }
+
+                // Выполнение SQL-запроса на удаление записи
+                SQLiteCommand deleteCmd = new SQLiteCommand(deleteSql, connection);
+                deleteCmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка при удалении записи из базы данных: " + ex.Message);
+            }
+            finally
+            {
+                // Закрытие соединения с базой данных
+                connection.Close();
+            }
+
+            // Возвращаем значение folder удаленной строки
+            return deletedFolderId;
+        }
+        
+        private void deleteProfilePC(int profId)
         {
             string sql = $"DELETE FROM PC_Profiles WHERE id_profile='{profId}';";
             //Console.WriteLine(sql);
