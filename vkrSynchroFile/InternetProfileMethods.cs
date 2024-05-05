@@ -18,5 +18,17 @@ namespace vkrSynchroFile
 
             return result;
         }
+
+
+        private const string FirstRunFlagFileName = "firstrun.marker";
+
+        public static string myUserUID()
+        {
+            string uniqueId = "";
+            // Загрузка уникального идентификатора из файла
+            uniqueId = File.ReadAllText(FirstRunFlagFileName);
+
+            return uniqueId;
+        }
     }
 }

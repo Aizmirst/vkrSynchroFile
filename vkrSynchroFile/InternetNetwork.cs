@@ -111,7 +111,7 @@ namespace vkrSynchroFile
 
                     // Получаем поток для передачи данных
                     NetworkStream stream = client.GetStream();
-
+                    string myUID = InternetProfileMethods.myUserUID();
                     // Создание объекта запроса для отправки сообщения
                     Request request = new Request
                     {
@@ -212,13 +212,11 @@ namespace vkrSynchroFile
 
         private const int port = 12345;
         private TcpListener server;
-        private string myUID;
 
-        public void StartServer(string myUID)
+        public void StartServer()
         {
             server = new TcpListener(IPAddress.Any, 12345); // Создание TcpListener
             server.Start(); // Запуск прослушивания
-            this.myUID = myUID;
             Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
             // Начать асинхронное принятие входящих соединений
@@ -290,6 +288,7 @@ namespace vkrSynchroFile
                         DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
                         db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId);
                         //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
+                        string myUID = InternetProfileMethods.myUserUID();
                         Request newRequest = new Request
                         {
                             uid = myUID,

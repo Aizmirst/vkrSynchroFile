@@ -40,6 +40,7 @@ namespace vkrSynchroFile
             dbLite = new SQLiteManager();
             dbMySQL = new MySqlManager();
             internetNetwork = new InternetNetwork();
+            internetNetwork.StartServer();
             TableUpdate();
 
             uniqueId = "";
@@ -67,7 +68,6 @@ namespace vkrSynchroFile
                 // Изменить текст кнопки
                 copiedTextButton.Content = $"Ваш идентефикатор: {uniqueId}";
             }
-            internetNetwork.StartServer(uniqueId);
         }
 
         public static string GetLocalIPAddress()
