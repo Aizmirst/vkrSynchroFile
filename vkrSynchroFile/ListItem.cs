@@ -17,7 +17,14 @@ namespace vkrSynchroFile
         public string folder2name { get; set; }
         public string folder2path { get; set; }
         public string text { get; set; }
+        
+        //Внутри 1 пк или по сети
         public int profType { get; set; }
+
+        // Одно или друсторонняя синхронизация
         public bool profMode { get; set; }
+
+        public string userUID { get; set; }
+        public string profileUID { get; set; }
     }
 }

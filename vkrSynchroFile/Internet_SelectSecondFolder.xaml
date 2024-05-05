@@ -16,9 +16,7 @@
 
         <Grid Grid.Row="0">
             <TextBlock x:Name="TitleTextBlock" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0">
-                        Получен запрос на создание профиля от пользователя:
-                        <LineBreak/>
-                        
+                        Получен запрос на создание профиля.
             </TextBlock>
         </Grid>
         <Grid Grid.Row="1">

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -471,7 +472,7 @@ namespace vkrSynchroFile
                 byte[] hashBytes = algorithm.ComputeHash(stream);
                 return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
             }
-        }
+        } 
 
         private void CopyRowButton_Click(object sender, RoutedEventArgs e)
         {
@@ -481,5 +482,11 @@ namespace vkrSynchroFile
             // Копирование текста в буфер обмена
             Clipboard.SetText(textToCopy);
         }
+
+        /*public static void openInternetProfileAccept(string senderUid)
+        {
+            Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder(senderUid);
+            internet_SelectSecondFolder.ShowDialog();
+        }*/
     }
 }

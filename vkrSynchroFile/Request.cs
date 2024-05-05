@@ -12,6 +12,7 @@ namespace vkrSynchroFile
 
         public string uid { get; set; }
         public string Message { get; set; }
+        public bool synhroMode { get; set; }
         public string profileUID { get; set; }
         public byte[] FileData { get; set; }
     }

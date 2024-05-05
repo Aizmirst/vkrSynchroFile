@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,17 +23,23 @@ namespace vkrSynchroFile
     public partial class Internet_SelectSecondFolder : Window
     {
 
-        private string uid;
-        public Internet_SelectSecondFolder(string uid)
+        public Internet_SelectSecondFolder()
         {
             InitializeComponent();
-            this.uid = uid;
-            TitleTextBlock.Text = $"Получен запрос на создание профиля от пользователя: \n {uid}.";
+            //senderUID = uid;
+            //Loaded += Internet_SelectSecondFolder_Loaded;
+            //TitleTextBlock.Text = $"Получен запрос на создание профиля от пользователя: \n {senderUID}.";
         }
+
+        /*public void Internet_SelectSecondFolder_Loaded(object sender, RoutedEventArgs e)
+        {
+            TitleTextBlock.Text = $"Получен запрос на создание профиля от пользователя: \n {senderUID}.";
+        }*/
 
 
         private string foldername;
-        private string folderpath;
+        public string folderpath { get; private set; }
+
         private void FolderSelectClick(object sender, RoutedEventArgs e)
         {
             VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
@@ -52,23 +59,29 @@ namespace vkrSynchroFile
             }
         }
 
+
+        public string uniqueId { get; private set; }
+
         private void AcceptClick(object sender, RoutedEventArgs e)
         {
             if (foldername != null)
             {
-                MySqlManager myDB = new MySqlManager();
-                if (myDB.searchDB(uid))
+                uniqueId = Guid.NewGuid().ToString();
+
+                this.Close();
+                /*MySqlManager myDB = new MySqlManager();
+                if (myDB.searchDB(senderUID))
                 {
                     InternetNetwork internetNetwork = new InternetNetwork();
-                    string ip = myDB.searchIP_DB(uid);
+                    string ip = myDB.searchIP_DB(senderUID);
                     string uniqueId = Guid.NewGuid().ToString();
-                    internetNetwork.AcceptProfile(ip, uid, uniqueId);
+                    internetNetwork.AcceptProfile(ip, uniqueId);
                     this.Close();
                 }
                 else
                 {
                     MessageBox.Show("Проблемы с подключением к БД. Повторите попытку!");
-                }
+                }*/
 
                 /*SQLiteManager db = new SQLiteManager();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);

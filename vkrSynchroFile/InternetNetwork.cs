@@ -12,6 +12,7 @@ using System.Net;
 using System.Text.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using MySqlX.XDevAPI.Common;
 
 namespace vkrSynchroFile
 {
@@ -36,7 +37,7 @@ namespace vkrSynchroFile
         }
 
         // Подтверждение создания профиля
-        public void AcceptProfile(string ip, string uid, string profUID)
+        /*public void AcceptProfile(string ip, string profUID)
         {
             try
             {
@@ -72,11 +73,11 @@ namespace vkrSynchroFile
                     stream.Write(requestDataBytes, 0, requestDataBytes.Length);
 
 
-                    /*// Ждем подтверждение от сервера
+                    *//*// Ждем подтверждение от сервера
                     byte[] buffer = new byte[256];
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
+                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*//*
 
                     // Закрываем соединение
                     stream.Close();
@@ -91,10 +92,10 @@ namespace vkrSynchroFile
             {
                 MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
             }
-        }
+        }*/
 
         // Отправка запроса на второе устройство для создания профиля
-        public void SendProfile(string ip)
+        public Request SendProfile(string ip, bool synhroMode)
         {
             try
             {
@@ -114,7 +115,8 @@ namespace vkrSynchroFile
                     Request request = new Request
                     {
                         Type = 1,
-                        uid = myUID
+                        uid = myUID,
+                        synhroMode = synhroMode
                     };
 
                     // Преобразование объекта запроса в JSON
@@ -128,6 +130,8 @@ namespace vkrSynchroFile
                     byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
                     stream.Write(requestDataBytes, 0, requestDataBytes.Length);
 
+                    // Получение и обработка ответа от сервера
+                    Request streamResult =  ProcessServerResponse(stream);
 
                     /*// Ждем подтверждение от сервера
                     byte[] buffer = new byte[256];
@@ -138,15 +142,70 @@ namespace vkrSynchroFile
                     // Закрываем соединение
                     stream.Close();
                     client.Close();
+
+
+                    if (streamResult == null)
+                    {
+                        MessageBox.Show("Создание профиля не одобрено вторым устройством.");
+                    }
+
+                    return streamResult;
                 }
                 else
                 {
                     MessageBox.Show("Устройство недоступно.", "Ошибка");
+                    return null;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+                return null;
+            }
+        }
+        private Request ProcessServerResponse(NetworkStream stream)
+        {
+            try
+            {
+                // Чтение длины сообщения
+                byte[] messageLengthBytes = new byte[sizeof(int)];
+                stream.Read(messageLengthBytes, 0, messageLengthBytes.Length);
+                int messageLength = BitConverter.ToInt32(messageLengthBytes, 0);
+
+                // Чтение сообщения
+                byte[] messageData = new byte[messageLength];
+                int totalBytesRead = 0;
+                while (totalBytesRead < messageLength)
+                {
+                    int bytesRead = stream.Read(messageData, totalBytesRead, messageLength - totalBytesRead);
+                    if (bytesRead == 0)
+                    {
+                        // Если чтение вернуло 0 байт, значит соединение закрыто
+                        break;
+                    }
+                    totalBytesRead += bytesRead;
+                }
+
+
+                // Проверка, является ли полученный запрос корректным JSON
+                bool isJson = IsValidJson(messageData);
+
+                if (isJson)
+                {
+                    // Преобразование JSON в объект ответа
+                    Request response = JsonSerializer.Deserialize<Request>(messageData);
+                    return response;
+
+                    // Обработка ответа...
+
+                }
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при обработке ответа от сервера: " + ex.Message, "Ошибка");
+                return null;
             }
         }
 
@@ -204,15 +263,47 @@ namespace vkrSynchroFile
                 //ProfileRequest
                 if (request.Type == 1)
                 {
-                    Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder(request.uid);
-                    internet_SelectSecondFolder.ShowDialog();
+                    //MainWindow.openInternetProfileAccept(request.uid);
+                    /*Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder();
+                    internet_SelectSecondFolder.Owner = Application.Current.MainWindow;
+                    internet_SelectSecondFolder.senderUID = request.uid;
+                    //internet_SelectSecondFolder.senderUID = request.uid;
+                    internet_SelectSecondFolder.ShowDialog();*/
+                    // В другом классе или потоке
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // Создаем экземпляр диалогового окна и передаем значение в конструкторе
+                        Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder();
+                        // Устанавливаем владельца диалогового окна
+                        /*internet_SelectSecondFolder.Owner = Application.Current.MainWindow;
+                        internet_SelectSecondFolder.senderUID = request.uid;*/
+
+                        // Показываем диалоговое окно
+                        internet_SelectSecondFolder.ShowDialog();
+                        //MessageBox.Show(internet_SelectSecondFolder.uniqueId);
+                        //MessageBox.Show(internet_SelectSecondFolder.folderpath);
+                        MySqlManager myDB = new MySqlManager();
+                        string ip = myDB.searchIP_DB(request.uid);
+
+                        SQLiteManager db = new SQLiteManager();
+                        DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
+                        db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId);
+                        //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
+                        Request newRequest = new Request
+                        {
+                            uid = myUID,
+                            profileUID = internet_SelectSecondFolder.uniqueId
+                        };
+                        SendConfirmation(newRequest, client);
+                    });
                     // Вывод сообщения в MessageBox
                     //MessageBox.Show(request.Message, $"Сообщение от клиента {request.uid}", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 //ProfileReply
                 else if (request.Type == 2)
                 {
-                    MessageBox.Show($"Профиль подтверждён {request.uid}, {request.profileUID}");
+                    //MessageBox.Show(request.uid);
+                    //MessageBox.Show(request.profileUID);
                     // Обработка файла
                     //byte[] fileContent = request.FileData;
                     // Далее ваша обработка файла...
@@ -256,14 +347,33 @@ namespace vkrSynchroFile
             }
         }
 
-        private void SendConfirmation(TcpClient client)
+        private void SendConfirmation(Request request, TcpClient client)
         {
-            NetworkStream stream = client.GetStream();
-            string confirmationMessage = "Сообщение получено!";
-            byte[] confirmationData = Encoding.UTF8.GetBytes(confirmationMessage);
-            stream.Write(confirmationData, 0, confirmationData.Length);
-            stream.Close();
-            client.Close();
+            try
+            {
+                NetworkStream stream = client.GetStream();
+                /*string confirmationMessage = "Сообщение получено!";
+                byte[] confirmationData = Encoding.UTF8.GetBytes(confirmationMessage);
+                stream.Write(confirmationData, 0, confirmationData.Length);*/
+
+                // Преобразование объекта запроса в JSON
+                string requestData = JsonSerializer.Serialize(request);
+
+                // Получение длины сообщения в байтах
+                byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                // Отправка JSON на клиентский узел
+                byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+                stream.Close();
+                client.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+            }
         }
     }
 }

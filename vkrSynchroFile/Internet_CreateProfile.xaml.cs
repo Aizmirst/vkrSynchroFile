@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Ookii.Dialogs.Wpf;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace vkrSynchroFile
 {
@@ -107,7 +108,19 @@ namespace vkrSynchroFile
             if (folder1name != null && userStatus)
             {
                 InternetNetwork internetNetwork = new InternetNetwork();
-                internetNetwork.SendProfile(userIP);
+                bool synhroMode = twoSideSynhroButton.IsChecked == true;
+                Request result = internetNetwork.SendProfile(userIP, synhroMode); 
+
+                if (result != null)
+                {
+                    MySqlManager myDB = new MySqlManager();
+                    string ip = myDB.searchIP_DB(result.uid);
+
+                    SQLiteManager db = new SQLiteManager();
+                    DirectoryInfo directoryInfo = new DirectoryInfo(folder1path);
+                    db.insertInternetDB(result.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), result.uid, result.profileUID);
+                    this.Close();
+                }
                 /*SQLiteManager db = new SQLiteManager();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
                 DirectoryInfo directoryInfo2 = new DirectoryInfo(folder2path);
@@ -115,7 +128,6 @@ namespace vkrSynchroFile
                 db.insertDB(synhroMode, directoryInfo1.Name, directoryInfo1.FullName, directoryInfo1.LastWriteTime, directoryInfo1.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length),
                     directoryInfo2.Name, directoryInfo2.FullName, directoryInfo2.LastWriteTime, directoryInfo2.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length));
                 this.Close();*/
-                this.Close();
             }
             else
             {
