@@ -24,7 +24,11 @@ namespace vkrSynchroFile
         // Одно или друсторонняя синхронизация
         public bool profMode { get; set; }
 
+        // uid второго пользователя в сетевом профиле
         public string userUID { get; set; }
         public string profileUID { get; set; }
+        
+        // флаг для отметки создателя сетевого профиля
+        public bool mainUser { get; set; }
     }
 }

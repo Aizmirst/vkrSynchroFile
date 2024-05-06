@@ -36,6 +36,7 @@ namespace vkrSynchroFile
                                             "id_user TEXT NOT NULL," +
                                             "profile_UID TEXT NOT NULL," +
                                             "two_sided BOOLEAN NOT NULL," +
+                                            "mainUser BOOLEAN NOT NULL," +
                                             "FOREIGN KEY (folder) REFERENCES Folders(id_folder))";
 
             SQLiteCommand command = new SQLiteCommand(createFoldersTable, connection);
@@ -81,7 +82,8 @@ namespace vkrSynchroFile
                 "f1.folder_path AS folder1_path, " +
                 "p.id_user," +
                 "p.profile_UID," +
-                "p.two_sided " +
+                "p.two_sided, " +
+                "p.mainUser " +
                 "FROM " +
                 "Internet_Profiles p " +
                 "JOIN " +
@@ -102,7 +104,8 @@ namespace vkrSynchroFile
                     profileUID = reader.GetString(5),
                     text = $"Профиль №{startProfileNumber}. Тип: По сети. UID: {reader.GetString(5)}",
                     profType = 3,
-                    profMode = reader.GetBoolean(6)
+                    profMode = reader.GetBoolean(6),
+                    mainUser = reader.GetBoolean(7),
                 });
                 startProfileNumber++; // Увеличиваем номер профиля на 1
             }
@@ -154,106 +157,6 @@ namespace vkrSynchroFile
             return items;
         }
 
-
-        /*public ObservableCollection<ListItem> readDBforTable()
-        {
-            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
-
-            foreach (ListItem item in readDBforTablePC())
-            {
-                items.Add(item);
-            }
-            foreach (ListItem item in readDBforTableInternet())
-            {
-                items.Add(item);
-            }
-
-            return items;
-
-        }
-
-        private ObservableCollection<ListItem> readDBforTableInternet()
-        {
-            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
-
-            string info = "SELECT " +
-                "p.id_profile, " +
-                "f1.id_folder AS folder1_id, " +
-                "f1.folder_name AS folder1_name, " +
-                "f1.folder_path AS folder1_path, " +
-                "p.id_user," +
-                "p.profile_UID," +
-                "p.two_sided " +
-                "FROM " +
-                "Internet_Profiles p " +
-                "JOIN " +
-                "Folders f1 ON p.folder = f1.id_folder ";
-
-            connection.Open();
-            SQLiteCommand command = new SQLiteCommand(info, connection);
-            SQLiteDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                items.Add(new ListItem()
-                {
-                    profile_id = reader.GetInt32(0),
-                    folder1id = reader.GetInt32(1),
-                    folder1name = reader.GetString(2),
-                    folder1path = reader.GetString(3),
-                    userUID = reader.GetString(4),
-                    profileUID = reader.GetString(5),
-                    text = $"Профиль №{reader.GetInt32(0)}. Тип: По сети.",
-                    profType = 3,
-                    profMode = reader.GetBoolean(6)
-                });
-            }
-            connection.Close();
-            return items;
-        }
-        
-        private ObservableCollection<ListItem> readDBforTablePC()
-        {
-            ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
-
-            string info = "SELECT " +
-                "p.id_profile, " +
-                "f1.id_folder AS folder1_id, " +
-                "f1.folder_name AS folder1_name, " +
-                "f1.folder_path AS folder1_path, " +
-                "f2.id_folder AS folder2_id, " +
-                "f2.folder_name AS folder2_name, " +
-                "f2.folder_path AS folder2_path, " +
-                "p.two_sided " +
-                "FROM " +
-                "PC_Profiles p " +
-                "JOIN " +
-                "Folders f1 ON p.folder1 = f1.id_folder " +
-                "JOIN " +
-                "Folders f2 ON p.folder2 = f2.id_folder;";
-
-            connection.Open();
-            SQLiteCommand command = new SQLiteCommand(info, connection);
-            SQLiteDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                items.Add(new ListItem()
-                {
-                    profile_id = reader.GetInt32(0),
-                    folder1id = reader.GetInt32(1),
-                    folder1name = reader.GetString(2),
-                    folder1path = reader.GetString(3),
-                    folder2id = reader.GetInt32(4),
-                    folder2name = reader.GetString(5),
-                    folder2path = reader.GetString(6),
-                    text = $"Профиль №{reader.GetInt32(0)}. Тип: Внутри 1 ПК.",
-                    profType = 1,
-                    profMode = reader.GetBoolean(7)
-                });
-            }
-            connection.Close();
-            return items;
-        }*/
-
         public void insertDB(bool two_sided, string name1, string path1, DateTime changeTime1, long weight1, string name2, string path2, DateTime changeTime2, long weight2)
         {
             int lastInsertedId1 = insertFolder(name1, path1, changeTime1, weight1);
@@ -261,10 +164,10 @@ namespace vkrSynchroFile
             insertProfile(lastInsertedId1, lastInsertedId2, two_sided);
         }
 
-        public void insertInternetDB(bool two_sided, string name, string path, DateTime changeTime, long weight, string id_user, string profile_UID)
+        public void insertInternetDB(bool two_sided, string name, string path, DateTime changeTime, long weight, string id_user, string profile_UID, bool mainUser)
         {
             int lastInsertedId = insertFolder(name, path, changeTime, weight);
-            insertInternetProfile(lastInsertedId, id_user, profile_UID, two_sided);
+            insertInternetProfile(lastInsertedId, id_user, profile_UID, two_sided, mainUser);
         }
 
         private int insertFolder(string name, string path, DateTime changeTime, long weight)
@@ -294,15 +197,16 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
-        private void insertInternetProfile(int id, string id_user, string profile_UID, bool two_sided)
+        private void insertInternetProfile(int id, string id_user, string profile_UID, bool two_sided, bool mainUser)
         {
             connection.Open();
-            string sql = "INSERT INTO Internet_Profiles (folder, id_user, profile_UID, two_sided) VALUES (@folder, @id_user, @profile_UID, @two_sided);";
+            string sql = "INSERT INTO Internet_Profiles (folder, id_user, profile_UID, two_sided, mainUser) VALUES (@folder, @id_user, @profile_UID, @two_sided, @mainUser);";
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.Parameters.AddWithValue("@folder", id);
             cmd.Parameters.AddWithValue("@id_user", id_user);
             cmd.Parameters.AddWithValue("@profile_UID", profile_UID);
             cmd.Parameters.AddWithValue("@two_sided", two_sided);
+            cmd.Parameters.AddWithValue("@mainUser", mainUser);
             cmd.ExecuteNonQuery();
             connection.Close();
         }

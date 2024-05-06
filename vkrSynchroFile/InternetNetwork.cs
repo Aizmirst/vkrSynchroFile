@@ -317,7 +317,7 @@ namespace vkrSynchroFile
 
                             SQLiteManager db = new SQLiteManager();
                             DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
-                            db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId);
+                            db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId, false);
                             //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
                             string myUID = InternetProfileMethods.myUserUID();
                             Request newRequest = new Request
