@@ -49,7 +49,7 @@ namespace vkrSynchroFile
             {
                 if(GetLocalIPAddress == null)
                 {
-                    MessageBox.Show("ip не обнаружен.");
+                    MessageBox.Show("ip для создание иденификатора не обнаружен.");
                 }
                 else
                 {
@@ -65,6 +65,27 @@ namespace vkrSynchroFile
             {
                 // Загрузка уникального идентификатора из файла
                 uniqueId = File.ReadAllText(FirstRunFlagFileName);
+                string ip = dbMySQL.searchIP_DB(uniqueId);
+
+                if (ip != null)
+                {
+                    if(GetLocalIPAddress() != ip && GetLocalIPAddress() != null)
+                    {
+                        //обновить ip в таблцие
+                        dbMySQL.updateDB(GetLocalIPAddress(), uniqueId);
+                    }
+                }
+                else
+                {
+                    if (GetLocalIPAddress != null)
+                    {
+                        // Генерация уникального идентификатора
+                        uniqueId = Guid.NewGuid().ToString();
+                        dbMySQL.insertDB(GetLocalIPAddress(), uniqueId);
+                        // Сохранение уникального идентификатора в файле
+                        File.WriteAllText(FirstRunFlagFileName, uniqueId);
+                    }
+                }
 
                 // Изменить текст кнопки
                 copiedTextButton.Content = $"Ваш идентефикатор: {uniqueId}";

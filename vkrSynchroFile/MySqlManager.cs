@@ -28,6 +28,42 @@ namespace vkrSynchroFile
             connection.Close();
         }*/
 
+        public void updateDB(string ip, string uniqueID)
+        {
+            string sql = @"UPDATE `Identifiers` SET `ip` = @ip WHERE `uniqueID` = @uniqueID";
+            bool success = false;
+            int attempts = 0;
+
+            while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
+            {
+                try
+                {
+                    connection.Open();
+                    MySqlCommand cmd = new MySqlCommand(sql, connection);
+                    cmd.Parameters.AddWithValue("@ip", ip);
+                    cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
+                    cmd.ExecuteNonQuery();
+                    success = true; // Успешно отправлено
+                }
+                catch (Exception ex)
+                {
+                    attempts++; // Увеличиваем количество попыток
+                                // Здесь можно добавить логирование ошибки, чтобы понять причину
+                    Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close(); // Всегда закрываем соединение после попытки
+                }
+            }
+
+            if (!success)
+            {
+                Console.WriteLine("Не удалось выполнить запрос после 3 попыток.");
+                // Здесь можно принять решение о дальнейших действиях, например, выйти из метода или сгенерировать исключение.
+            }
+        }
+
         public void insertDB(string ip, string uniqueID)
         {
             /*string sql = @"INSERT INTO `Identifiers` (`ip`, `uniqueID`) " +
@@ -134,25 +170,6 @@ namespace vkrSynchroFile
         
         public string searchIP_DB(string uid)
         {
-            /*string sql = @"SELECT `ip` FROM `Identifiers` WHERE `uniqueID` = @uniqueID";
-            string ip = "null";
-            connection.Open();
-            MySqlCommand cmd = new MySqlCommand(sql, connection);
-            cmd = new MySqlCommand(sql, connection);
-            cmd.Parameters.AddWithValue("@uniqueID", uid);
-            // Используем ExecuteScalar для получения единственного значения (ID)
-            object result = cmd.ExecuteScalar();
-
-            // Проверяем результат на null
-            if (result != null)
-            {
-                // Преобразуем результат в строку
-                ip = result.ToString();
-            }
-
-            connection.Close();
-
-            return ip;*/
 
             string sql = @"SELECT `ip` FROM `Identifiers` WHERE `uniqueID` = @uniqueID";
             string ip = "null";
