@@ -128,7 +128,7 @@ namespace vkrSynchroFile
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
                 DirectoryInfo directoryInfo2 = new DirectoryInfo(folder2path);
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
-                db.updateDB(profileID, synhroMode,
+                db.updateDB_PC(profileID, synhroMode,
                     folder1ID, directoryInfo1.Name, directoryInfo1.FullName,
                     folder2ID, directoryInfo2.Name, directoryInfo2.FullName);
                 this.Close();

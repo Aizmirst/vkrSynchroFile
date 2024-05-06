@@ -198,6 +198,8 @@ namespace vkrSynchroFile
                         TableUpdate();
                         break;
                     case 3:
+                        Internet_ChangeProfile internet_ChangeProfile = new Internet_ChangeProfile(selectedItem);
+                        internet_ChangeProfile.ShowDialog();
                         TableUpdate();
                         break;
                 }
@@ -235,7 +237,7 @@ namespace vkrSynchroFile
             }
         }
 
-        private void ItemListBox_Selection(object sender, RoutedEventArgs e)
+        /*private void ItemListBox_Selection(object sender, RoutedEventArgs e)
         {
             // Проверяем, есть ли выбранный элемент
             if (itemListBox.SelectedItem != null)
@@ -252,7 +254,7 @@ namespace vkrSynchroFile
                 // Показываем уведомление
                 MessageBox.Show(notification, "Выбор элемента");
             }
-        }
+        }*/
         
         private void SynchroFileButton(object sender, RoutedEventArgs e)
         {

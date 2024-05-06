@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
+using System.Xml.Linq;
 
 namespace vkrSynchroFile
 {
@@ -288,9 +289,13 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
+        public void updateDB_Internet(int folderId, string name, string path)
+        {
+            updateFolder(folderId, name, path);
+        }
 
 
-        public void updateDB(int profile_id, bool two_sided,
+        public void updateDB_PC(int profile_id, bool two_sided,
             int folder1Id, string name1, string path1,
             int folder2Id, string name2, string path2) //более правильно и безопаснее, но чуть геморнее, ибо надо учитывать типы
         {
