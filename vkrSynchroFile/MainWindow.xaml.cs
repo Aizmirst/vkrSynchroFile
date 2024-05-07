@@ -219,7 +219,7 @@ namespace vkrSynchroFile
                         break;
                     case 3:
                         InternetNetwork internetNetwork = new InternetNetwork();
-                        bool deleteCheck = internetNetwork.deleteProfile(selectedItem.userUID, selectedItem.profileUID);
+                        bool deleteCheck = internetNetwork.DeleteProfile(selectedItem.userUID, selectedItem.profileUID);
                         if (deleteCheck)
                         {
                             dbLite.deleteDB_Internet(selectedItem.userUID, selectedItem.profileUID);
@@ -254,6 +254,9 @@ namespace vkrSynchroFile
             if (mode)
             {
                 List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
+                string userIP = dbMySQL.searchIP_DB(userUID);
+                string folderPath = dbLite.getFolderPathInternetProfile(profileUID);
+                internetNetwork.TwoSideSynchroSend(userIP, profileUID, folderPath, result);
                 /*string tt = "";
                 foreach (var fileInfo in result)
                 {
@@ -270,7 +273,7 @@ namespace vkrSynchroFile
                         List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
                         string userIP = dbMySQL.searchIP_DB(userUID);
                         string folderPath = dbLite.getFolderPathInternetProfile(profileUID);
-                        internetNetwork.oneSideSynchroSend(userIP, profileUID, folderPath, result);
+                        internetNetwork.OneSideSynchroSend(userIP, profileUID, folderPath, result);
                     }
                     else
                     {
@@ -280,7 +283,7 @@ namespace vkrSynchroFile
                 else
                 {
                     string userIP = dbMySQL.searchIP_DB(userUID);
-                    internetNetwork.triggerOneSideSynchroSend(userIP, profileUID);
+                    internetNetwork.TriggerOneSideSynchroSend(userIP, profileUID);
                 }
             }
         }

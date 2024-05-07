@@ -125,7 +125,7 @@ namespace vkrSynchroFile
             }
         }
 
-        public bool deleteProfile(string userUID, string profileUID)
+        public bool DeleteProfile(string userUID, string profileUID)
         {
             try
             {
@@ -201,7 +201,7 @@ namespace vkrSynchroFile
             }
         }
 
-        public void triggerOneSideSynchroSend(string ip, string profileUID)
+        public void TriggerOneSideSynchroSend(string ip, string profileUID)
         {
             try
             {
@@ -251,7 +251,7 @@ namespace vkrSynchroFile
             }
         }
 
-        public void oneSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo) 
+        public void OneSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo) 
         {
             try
             {
@@ -301,8 +301,8 @@ namespace vkrSynchroFile
                         // Обработка ответа прошла успешно, здесь можно отправить еще один запрос, если нужно
 
                         // Например:
-                        List<FileInformation> listForSynchro = readyFilesForSend(streamResult.fileInformation);
-                        oneSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
+                        List<FileInformation> listForSynchro = OneSideReadyFilesForSend(streamResult.fileInformation);
+                        OneSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
 
                     }
                     /*// Ждем подтверждение от сервера
@@ -326,7 +326,7 @@ namespace vkrSynchroFile
             }
         }
 
-        private List<FileInformation> readyFilesForSend(List<FileInformation> fileInformation)
+        private List<FileInformation> OneSideReadyFilesForSend(List<FileInformation> fileInformation)
         {
             List<FileInformation> newList = new List<FileInformation>();
             foreach (var fileInfo in fileInformation)
@@ -340,7 +340,7 @@ namespace vkrSynchroFile
             return newList;
         }
 
-        private void oneSideSynchroSendFile(string ip, string profileUID, string folderPath, List<FileInformation> list)
+        private void OneSideSynchroSendFile(string ip, string profileUID, string folderPath, List<FileInformation> list)
         {
             try
             {
@@ -360,6 +360,174 @@ namespace vkrSynchroFile
                     Request request = new Request
                     {
                         Type = 4,
+                        uid = myUID,
+                        profileUID = profileUID,
+                        folderPath = folderPath,
+                        fileInformation = list
+                    };
+
+                    // Преобразование объекта запроса в JSON
+                    string requestData = JsonSerializer.Serialize(request);
+
+                    // Получение длины сообщения в байтах
+                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                    // Отправка JSON на сервер
+                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+                    // Получение и обработка ответа от сервера
+                    Request streamResult = ProcessServerResponse(stream);
+
+                    // Обработка ответа от сервера
+                    if (streamResult == null)
+                    {
+                        MessageBox.Show("Процесс синхронизации завершён.");
+                    }
+
+                    // Закрываем соединение
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Устройство недоступно.", "Ошибка");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+            }
+        }
+
+        public void TwoSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo)
+        {
+            try
+            {
+                if (PingDevice(ip))
+                {
+                    // IP-адрес и порт сервера, к которому мы хотим подключиться
+                    string serverIP = ip; // Замените на IP-адрес вашего сервера
+                    int serverPort = 12345; // Замените на порт вашего сервера
+
+                    // Создание экземпляра TcpClient для подключения к серверу
+                    TcpClient client = new TcpClient(serverIP, serverPort);
+
+                    // Получаем поток для передачи данных
+                    NetworkStream stream = client.GetStream();
+                    string myUID = InternetProfileMethods.myUserUID();
+                    // Создание объекта запроса для отправки сообщения
+                    Request request = new Request
+                    {
+                        Type = 6,
+                        uid = myUID,
+                        folderPath = folderPath,
+                        profileUID = profileUID,
+                        fileInformation = filesInfo
+                    };
+
+                    // Преобразование объекта запроса в JSON
+                    string requestData = JsonSerializer.Serialize(request);
+
+                    // Получение длины сообщения в байтах
+                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                    // Отправка JSON на сервер
+                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+                    // Получение и обработка ответа от сервера
+                    Request streamResult = ProcessServerResponse(stream);
+
+                    // Обработка ответа от сервера
+                    if (streamResult == null)
+                    {
+                        MessageBox.Show("Ошибка синхронизации.");
+                    }
+                    else
+                    {
+                        // Обработка ответа прошла успешно, здесь можно отправить еще один запрос, если нужно
+                        List<FileInformation> listForSynchro = TwoSideReadyFilesForSend(streamResult.fileInformation, folderPath);
+                        TwoSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
+
+                    }
+                    /*// Ждем подтверждение от сервера
+                    byte[] buffer = new byte[256];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
+
+                    // Закрываем соединение
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Устройство недоступно.", "Ошибка");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
+            }
+        }
+        private List<FileInformation> TwoSideReadyFilesForSend(List<FileInformation> fileInformation, string folder)
+        {
+            List<FileInformation> newList = new List<FileInformation>();
+            foreach (var fileInfo in fileInformation)
+            {
+                if (!fileInfo.IsDirectory)
+                {
+                    if (fileInfo.FileData == null)
+                    {
+                        // Загрузка файла
+                        byte[] fileData = File.ReadAllBytes(fileInfo.Path);
+
+                        fileInfo.FileData = fileData;
+                        newList.Add(fileInfo);
+                    }
+                    else
+                    {
+                        File.WriteAllBytes(fileInfo.Path, fileInfo.FileData);
+                    }
+                }
+                else
+                {
+                    /*string directoryName = GetRelativePath(fileInfo.Path, folder1path);
+                    string directoryPath2 = Path.Combine(folder2, directoryName);*/
+                    if (!Directory.Exists(fileInfo.Path))
+                    {
+                        // Если подпапки нет во второй папке, создаем ее
+                        Directory.CreateDirectory(fileInfo.Path);
+                    }
+                }
+                
+            }
+            return newList;
+        }
+
+        private void TwoSideSynchroSendFile(string ip, string profileUID, string folderPath, List<FileInformation> list)
+        {
+            try
+            {
+                if (PingDevice(ip))
+                {
+                    // IP-адрес и порт сервера, к которому мы хотим подключиться
+                    string serverIP = ip; // Замените на IP-адрес вашего сервера
+                    int serverPort = 12345; // Замените на порт вашего сервера
+
+                    // Создание экземпляра TcpClient для подключения к серверу
+                    TcpClient client = new TcpClient(serverIP, serverPort);
+
+                    // Получаем поток для передачи данных
+                    NetworkStream stream = client.GetStream();
+                    string myUID = InternetProfileMethods.myUserUID();
+                    // Создание объекта запроса для отправки сообщения
+                    Request request = new Request
+                    {
+                        Type = 7,
                         uid = myUID,
                         profileUID = profileUID,
                         folderPath = folderPath,
@@ -558,7 +726,7 @@ namespace vkrSynchroFile
 
                         // формирование списка файлов, которые нужно получить
                         SQLiteManager db = new SQLiteManager();
-                        List<FileInformation> newfileInformation = AnalisFileInformation(fileInformation, request.folderPath, db.getFolderPathInternetProfile(request.profileUID));
+                        List<FileInformation> newfileInformation = OneSideAnalisFileInformation(fileInformation, request.folderPath, db.getFolderPathInternetProfile(request.profileUID));
                         string myUID = InternetProfileMethods.myUserUID();
                         Request nRequest = new Request
                         {
@@ -572,7 +740,7 @@ namespace vkrSynchroFile
                         // Получение и синхронизация файлов
                         List<FileInformation> files = request.fileInformation;
                         SQLiteManager db4 = new SQLiteManager();
-                        doOneSideSynchro(files, request.folderPath, db4.getFolderPathInternetProfile(request.profileUID));
+                        WriteNewFiles(files, request.folderPath, db4.getFolderPathInternetProfile(request.profileUID));
                         Request newReq = null;
                         SendConfirmation(newReq, client);
                         break; 
@@ -584,12 +752,36 @@ namespace vkrSynchroFile
                             List<FileInformation> result5 = AnalisFolderForInternet(db5.getFolderPathInternetProfile(request.profileUID));
                             string userIP = dbMySQL.searchIP_DB(request.uid);
                             string folderPath = db5.getFolderPathInternetProfile(request.profileUID);
-                            oneSideSynchroSend(userIP, request.profileUID, folderPath, result5);
+                            OneSideSynchroSend(userIP, request.profileUID, folderPath, result5);
                         }
                         else
                         {
                             MessageBox.Show("Ошибка с идентификаторе второго устройства!");
                         }
+                        break;
+                    case 6:
+                        //Обработка односторонней синхронизации
+                        List<FileInformation> fileInformation6 = request.fileInformation;
+
+                        // формирование списка файлов, которые нужно получить
+                        SQLiteManager db6 = new SQLiteManager();
+                        List<FileInformation> newfileInformation6 = TwoSideAnalisFileInformation(fileInformation6, request.folderPath, db6.getFolderPathInternetProfile(request.profileUID));
+                        string myUID6 = InternetProfileMethods.myUserUID();
+                        Request nRequest6 = new Request
+                        {
+                            Type = 6,
+                            uid = myUID6,
+                            fileInformation = newfileInformation6
+                        };
+                        SendConfirmation(nRequest6, client);
+                        break;
+                    case 7:
+                        // Получение и синхронизация файлов
+                        List<FileInformation> files7 = request.fileInformation;
+                        SQLiteManager db7 = new SQLiteManager();
+                        WriteNewFiles(files7, request.folderPath, db7.getFolderPathInternetProfile(request.profileUID));
+                        Request newReq7 = null;
+                        SendConfirmation(newReq7, client);
                         break;
                 }
             }
@@ -608,7 +800,7 @@ namespace vkrSynchroFile
             server.BeginAcceptTcpClient(new AsyncCallback(HandleClient), null);
         }
 
-        private List<FileInformation> AnalisFileInformation(List<FileInformation> fileList, string folder1path, string folder2)
+        private List<FileInformation> OneSideAnalisFileInformation(List<FileInformation> fileList, string folder1path, string folder2)
         {
             List <FileInformation> newList = new List<FileInformation>();
             List<FileInformation> folder2List = AnalisFolderForInternet(folder2);
@@ -673,7 +865,93 @@ namespace vkrSynchroFile
             return newList;
         }
 
-        private void doOneSideSynchro(List<FileInformation> list, string folder1path, string folder2)
+        private List<FileInformation> TwoSideAnalisFileInformation(List<FileInformation> fileList, string folder1path, string folder2)
+        {
+            List<FileInformation> newList = new List<FileInformation>();
+            // Анализ папки на этом устройстве
+            List<FileInformation> folder2List = AnalisFolderForInternet(folder2);
+
+            foreach (var fileInfo in fileList)
+            {
+                if (!fileInfo.IsDirectory)
+                {
+                    string fileName = GetRelativePath(fileInfo.Path, folder1path);
+                    string filePath2 = Path.Combine(folder2, fileName);
+
+                    // Получаем информацию о файле из списка folder2List
+                    var fileData2 = folder2List.FirstOrDefault(f => f.Name == fileInfo.Name && !f.IsDirectory);
+
+                    if (fileData2 != null)
+                    {
+                        if (fileInfo.HashCode != fileData2.HashCode)
+                        {
+                            if(fileInfo.LastModified > fileData2.LastModified)
+                            {
+                                // Если file1 более новый, значит запрашиваем его на синхронизацию
+                                fileInfo.ForSynchro = true;
+                                newList.Add(fileInfo);
+                            }
+                            else
+                            {
+                                byte[] fileData = File.ReadAllBytes(fileData2.Path);
+                                fileInfo.ForSynchro = true;
+                                fileInfo.FileData = fileData;
+                                newList.Add(fileInfo);
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        // Если файл отсутствует во второй папке, копируем его из первой
+                        fileInfo.ForCopy = true;
+                        newList.Add(fileInfo);
+                    }
+                }
+                else
+                {
+                    string directoryName = GetRelativePath(fileInfo.Path, folder1path);
+                    string directoryPath2 = Path.Combine(folder2, directoryName);
+                    if (!Directory.Exists(directoryPath2))
+                    {
+                        // Если подпапки нет во второй папке, создаем ее
+                        Directory.CreateDirectory(directoryPath2);
+                    }
+                }
+            }
+
+            // Проверяем файлы во втором списке, которые отсутствуют в первом списке
+            foreach (var fileInfo2 in folder2List)
+            {
+                string fileName = GetRelativePath(fileInfo2.Path, folder2);
+                string filePath1 = Path.Combine(folder1path, fileName);
+
+                // Если файл отсутствует в первом списке, удаляем его
+                if (!fileList.Any(f => f.Path == filePath1))
+                {
+                    if (!fileInfo2.IsDirectory)
+                    {
+                        FileInformation fileInfo = GetFileInformation(fileInfo2.Path);
+                        byte[] fileData = File.ReadAllBytes(fileInfo2.Path);
+                        fileInfo.ForSynchro = true;
+                        fileInfo.FileData = fileData;
+                        newList.Add(fileInfo);
+                    }
+                    else
+                    {
+                        FileInformation fileInfo = GetFileInformation(fileInfo2.Path);
+                        byte[] fileData = File.ReadAllBytes(fileInfo2.Path);
+                        fileInfo.Path = filePath1;
+                        fileInfo.needCreate = true;
+                        newList.Add(fileInfo);
+                    }
+                }
+            }
+
+            return newList;
+        }
+
+        private void WriteNewFiles(List<FileInformation> list, string folder1path, string folder2)
         {
             foreach(var fileInfo in list)
             {

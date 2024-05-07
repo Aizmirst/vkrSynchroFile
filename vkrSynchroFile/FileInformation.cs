@@ -13,7 +13,12 @@ namespace vkrSynchroFile
         public DateTime LastModified { get; set; }
         public string HashCode { get; set; }
         public bool IsDirectory { get; set; }
+        // Если папку нужно добавить на другом устройстве
+        public bool needCreate { get; set; }
+        // Для синхронизации
         public bool ForSynchro { get; set; }
+
+        // Для копирования
         public bool ForCopy { get; set; }
         public byte[] FileData { get; set; }
     }
