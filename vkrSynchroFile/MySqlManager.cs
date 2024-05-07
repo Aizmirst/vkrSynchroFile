@@ -31,37 +31,36 @@ namespace vkrSynchroFile
         public void updateDB(string ip, string uniqueID)
         {
             string sql = @"UPDATE `Identifiers` SET `ip` = @ip WHERE `uniqueID` = @uniqueID";
-            bool success = false;
-            int attempts = 0;
+            //bool success = false;
+            //int attempts = 0;
 
-            while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
+            //while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз{
+            try
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand cmd = new MySqlCommand(sql, connection);
-                    cmd.Parameters.AddWithValue("@ip", ip);
-                    cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
-                    cmd.ExecuteNonQuery();
-                    success = true; // Успешно отправлено
-                }
-                catch (Exception ex)
-                {
-                    attempts++; // Увеличиваем количество попыток
-                                // Здесь можно добавить логирование ошибки, чтобы понять причину
-                    Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
-                }
-                finally
-                {
-                    connection.Close(); // Всегда закрываем соединение после попытки
-                }
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@ip", ip);
+                cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
+                cmd.ExecuteNonQuery();
+                //success = true; // Успешно отправлено
             }
+            catch (Exception ex)
+            {
+                //attempts++; // Увеличиваем количество попыток
+                            // Здесь можно добавить логирование ошибки, чтобы понять причину
+                Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close(); // Всегда закрываем соединение после попытки
+            }
+            //}
 
-            if (!success)
+            /*if (!success)
             {
                 Console.WriteLine("Не удалось выполнить запрос после 3 попыток.");
                 // Здесь можно принять решение о дальнейших действиях, например, выйти из метода или сгенерировать исключение.
-            }
+            }*/
         }
 
         public void insertDB(string ip, string uniqueID)
