@@ -200,7 +200,7 @@ namespace vkrSynchroFile
             }
         }
 
-        public void oneSideSynchroSend(string ip, string folderPath, List<FileInformation> filesInfo) 
+        public void oneSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo) 
         {
             try
             {
@@ -222,6 +222,7 @@ namespace vkrSynchroFile
                         Type = 3,
                         uid = myUID,
                         folderPath = folderPath,
+                        profileUID = profileUID,
                         fileInformation = filesInfo
                     };
 
@@ -250,7 +251,7 @@ namespace vkrSynchroFile
 
                         // Например:
                         List<FileInformation> listForSynchro = readyFilesForSend(streamResult.fileInformation);
-                        oneSideSynchroSendFile(ip, folderPath, listForSynchro);
+                        oneSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
 
                     }
                     /*// Ждем подтверждение от сервера
@@ -288,7 +289,7 @@ namespace vkrSynchroFile
             return newList;
         }
 
-        private void oneSideSynchroSendFile(string ip, string folderPath, List<FileInformation> list)
+        private void oneSideSynchroSendFile(string ip, string profileUID, string folderPath, List<FileInformation> list)
         {
             try
             {
@@ -309,6 +310,7 @@ namespace vkrSynchroFile
                     {
                         Type = 4,
                         uid = myUID,
+                        profileUID = profileUID,
                         folderPath = folderPath,
                         fileInformation = list
                     };

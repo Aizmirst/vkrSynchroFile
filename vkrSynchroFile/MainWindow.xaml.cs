@@ -267,7 +267,7 @@ namespace vkrSynchroFile
                 {
                     string userIP = dbMySQL.searchIP_DB(userUID);
                     string folderPath = dbLite.getFolderPathInternetProfile(userUID);
-                    internetNetwork.oneSideSynchroSend(userIP, folderPath, result);
+                    internetNetwork.oneSideSynchroSend(userIP, profileUID, folderPath, result);
                 }
                 else
                 {
