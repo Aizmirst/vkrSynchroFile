@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.ApplicationServices;
+using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
@@ -242,13 +243,13 @@ namespace vkrSynchroFile
                         SynchroPC(selectedItem.folder1path, selectedItem.folder2path, selectedItem.profMode);
                         break;
                     case 3:
-                        SynchroInternet(selectedItem.folder1path, selectedItem.userUID, selectedItem.profileUID, selectedItem.profMode);
+                        SynchroInternet(selectedItem.folder1path, selectedItem.userUID, selectedItem.profileUID, selectedItem.profMode, selectedItem.mainUser);
                         break;
                 }
             }
         }
 
-        public void SynchroInternet(string nameFolder1, string userUID, string profileUID, bool mode)
+        public void SynchroInternet(string nameFolder1, string userUID, string profileUID, bool mode, bool mainUser)
         {
             if (mode)
             {
@@ -262,16 +263,24 @@ namespace vkrSynchroFile
             }
             else
             {
-                List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
-                if (dbMySQL.searchDB(userUID))
+                if(mainUser)
                 {
-                    string userIP = dbMySQL.searchIP_DB(userUID);
-                    string folderPath = dbLite.getFolderPathInternetProfile(profileUID);
-                    internetNetwork.oneSideSynchroSend(userIP, profileUID, folderPath, result);
+                    if (dbMySQL.searchDB(userUID))
+                    {
+                        List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
+                        string userIP = dbMySQL.searchIP_DB(userUID);
+                        string folderPath = dbLite.getFolderPathInternetProfile(profileUID);
+                        internetNetwork.oneSideSynchroSend(userIP, profileUID, folderPath, result);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                    string userIP = dbMySQL.searchIP_DB(userUID);
+                    internetNetwork.triggerOneSideSynchroSend(userIP, profileUID);
                 }
             }
         }

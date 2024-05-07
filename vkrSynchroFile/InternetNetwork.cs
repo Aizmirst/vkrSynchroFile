@@ -20,6 +20,7 @@ using static vkrSynchroFile.MainWindow;
 using System.Security.Cryptography;
 using System.Reflection;
 using static vkrSynchroFile.InternetNetwork;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace vkrSynchroFile
 {
@@ -197,6 +198,56 @@ namespace vkrSynchroFile
             {
                 MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
                 return false;
+            }
+        }
+
+        public void triggerOneSideSynchroSend(string ip, string profileUID)
+        {
+            try
+            {
+                if (PingDevice(ip))
+                {
+                    // IP-адрес и порт сервера, к которому мы хотим подключиться
+                    string serverIP = ip; // Замените на IP-адрес вашего сервера
+                    int serverPort = 12345; // Замените на порт вашего сервера
+
+                    // Создание экземпляра TcpClient для подключения к серверу
+                    TcpClient client = new TcpClient(serverIP, serverPort);
+
+                    // Получаем поток для передачи данных
+                    NetworkStream stream = client.GetStream();
+                    string myUID = InternetProfileMethods.myUserUID();
+                    // Создание объекта запроса для отправки сообщения
+                    Request request = new Request
+                    {
+                        Type = 5,
+                        uid = myUID,
+                        profileUID = profileUID
+                    };
+
+                    // Преобразование объекта запроса в JSON
+                    string requestData = JsonSerializer.Serialize(request);
+
+                    // Получение длины сообщения в байтах
+                    byte[] messageLengthBytes = BitConverter.GetBytes(requestData.Length);
+                    stream.Write(messageLengthBytes, 0, messageLengthBytes.Length);
+
+                    // Отправка JSON на сервер
+                    byte[] requestDataBytes = Encoding.UTF8.GetBytes(requestData);
+                    stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+
+                    // Закрываем соединение
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Устройство недоступно.", "Ошибка");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка");
             }
         }
 
@@ -524,6 +575,21 @@ namespace vkrSynchroFile
                         doOneSideSynchro(files, request.folderPath, db4.getFolderPathInternetProfile(request.profileUID));
                         Request newReq = null;
                         SendConfirmation(newReq, client);
+                        break; 
+                    case 5:
+                        MySqlManager dbMySQL = new MySqlManager();
+                        if (dbMySQL.searchDB(request.uid))
+                        {
+                            SQLiteManager db5 = new SQLiteManager();
+                            List<FileInformation> result5 = AnalisFolderForInternet(db5.getFolderPathInternetProfile(request.profileUID));
+                            string userIP = dbMySQL.searchIP_DB(request.uid);
+                            string folderPath = db5.getFolderPathInternetProfile(request.profileUID);
+                            oneSideSynchroSend(userIP, request.profileUID, folderPath, result5);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                        }
                         break;
                 }
             }
