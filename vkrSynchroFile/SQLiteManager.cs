@@ -51,6 +51,57 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
+        public bool IsMainUser(string profileUID)
+        {
+            bool isMainUser = false;
+            connection.Open();
+
+            string query = "SELECT mainUser FROM Internet_Profiles WHERE profile_UID = @ProfileUID";
+
+            SQLiteCommand command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@ProfileUID", profileUID);
+
+            SQLiteDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                isMainUser = reader.GetBoolean(0);
+            }
+
+            reader.Close();
+            connection.Close();
+
+            return isMainUser;
+        }
+
+        public string getFolderPathInternetProfile(string profileUID)
+        {
+            string folderPath = "";
+            connection.Open();
+
+            string query = "SELECT " +
+                "f1.folder_path AS folder1_path " +
+                "FROM " +
+                "Internet_Profiles p " +
+                "JOIN " +
+                "Folders f1 ON p.folder = f1.id_folder " +
+                "WHERE " +
+                "p.profile_UID = @ProfileUID";
+
+            SQLiteCommand command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@ProfileUID", profileUID);
+
+            SQLiteDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                folderPath = reader["folder1_path"].ToString();
+            }
+
+            reader.Close();
+            connection.Close();
+
+            return folderPath;
+        }
+
         public ObservableCollection<ListItem> readDBforTable()
         {
             ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();

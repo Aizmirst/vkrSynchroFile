@@ -11,9 +11,13 @@ namespace vkrSynchroFile
         public int Type { get; set; }
 
         public string uid { get; set; }
-        public string Message { get; set; }
+        
+        // путь папки на клиентсокм устройстве, для синхронизации
+        public string folderPath { get; set; }
+
         public bool synhroMode { get; set; }
         public string profileUID { get; set; }
-        public byte[] FileData { get; set; }
+
+        public List<FileInformation> fileInformation { get; set; }
     }
 }

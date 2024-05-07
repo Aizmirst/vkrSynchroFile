@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -163,10 +165,6 @@ namespace vkrSynchroFile
                     pc_CreateProfile.ShowDialog();
                     TableUpdate();
                     break;
-                // По локалке
-                case 2:
-                    TableUpdate();
-                    break;
                 // По инету
                 case 3:
                     Internet_CreateProfile internet_CreateProfile = new Internet_CreateProfile(uniqueId);
@@ -194,9 +192,6 @@ namespace vkrSynchroFile
                         pc_ChangeProfile.ShowDialog();
                         TableUpdate();
                         break;
-                    case 2:
-                        TableUpdate();
-                        break;
                     case 3:
                         Internet_ChangeProfile internet_ChangeProfile = new Internet_ChangeProfile(selectedItem);
                         internet_ChangeProfile.ShowDialog();
@@ -221,9 +216,6 @@ namespace vkrSynchroFile
                         //((ObservableCollection<ListItem>)itemListBox.ItemsSource).Remove(selectedItem);
                         TableUpdate();
                         break;
-                    case 2:
-                        TableUpdate();
-                        break;
                     case 3:
                         InternetNetwork internetNetwork = new InternetNetwork();
                         bool deleteCheck = internetNetwork.deleteProfile(selectedItem.userUID, selectedItem.profileUID);
@@ -236,25 +228,6 @@ namespace vkrSynchroFile
                 }
             }
         }
-
-        /*private void ItemListBox_Selection(object sender, RoutedEventArgs e)
-        {
-            // Проверяем, есть ли выбранный элемент
-            if (itemListBox.SelectedItem != null)
-            {
-                // Приводим выбранный элемент к типу вашего класса Item
-                ListItem selectedItem = (ListItem)itemListBox.SelectedItem;
-
-                // Формируем уведомление с параметрами элемента
-                string notification = $"Выбран элемент: {selectedItem.text}\n" +
-                                      $"Profile ID: {selectedItem.profile_id}\n" +
-                                      $"Folder 1: {selectedItem.folder1path}\n" +
-                                      $"Folder 2: {selectedItem.folder2path}";
-
-                // Показываем уведомление
-                MessageBox.Show(notification, "Выбор элемента");
-            }
-        }*/
         
         private void SynchroFileButton(object sender, RoutedEventArgs e)
         {
@@ -262,24 +235,102 @@ namespace vkrSynchroFile
             if (itemListBox.SelectedItem != null)
             {
                 ListItem selectedItem = (ListItem)itemListBox.SelectedItem;
-                Synchro(selectedItem.folder1path, selectedItem.folder2path, selectedItem.profMode);
+
+                switch (selectedItem.profType)
+                {
+                    case 1:
+                        SynchroPC(selectedItem.folder1path, selectedItem.folder2path, selectedItem.profMode);
+                        break;
+                    case 3:
+                        SynchroInternet(selectedItem.folder1path, selectedItem.userUID, selectedItem.profileUID, selectedItem.profMode);
+                        break;
+                }
             }
         }
 
-        public void Synchro(string nameFolder1, string nameFolder2, bool mode)
+        public void SynchroInternet(string nameFolder1, string userUID, string profileUID, bool mode)
         {
             if (mode)
             {
-                TwoSideSynhroFolders(nameFolder1, nameFolder2);
+                List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
+                /*string tt = "";
+                foreach (var fileInfo in result)
+                {
+                    tt += $"Name: {fileInfo.FileName} Path: {fileInfo.FullPath} Hash Code: {fileInfo.HashCode} Last Modified: {fileInfo.LastModified} Is Directory: {fileInfo.IsDirectory} \n\n";
+                }
+                MessageBox.Show(tt);*/
             }
             else
             {
-                OneSideSynhroFolders(nameFolder1, nameFolder2);
+                List<FileInformation> result = AnalisFolderForInternet(nameFolder1);
+                if (dbMySQL.searchDB(userUID))
+                {
+                    string userIP = dbMySQL.searchIP_DB(userUID);
+                    string folderPath = dbLite.getFolderPathInternetProfile(userUID);
+                    internetNetwork.oneSideSynchroSend(userIP, folderPath, result);
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                }
+            }
+        }
+
+        private List<FileInformation> AnalisFolderForInternet(string folderPath)
+        {
+            List<FileInformation> filesInfo = new List<FileInformation>();
+
+            // Получаем информацию о файлах и подпапках в текущей папке
+            string[] files = Directory.GetFiles(folderPath);
+            foreach (string filePath in files)
+            {
+                // Получаем информацию о файле и добавляем ее в список
+                FileInformation fileInfo = GetFileInformation(filePath);
+                filesInfo.Add(fileInfo);
+            }
+
+            // Получаем информацию о подпапках и их содержимом
+            string[] subdirectories = Directory.GetDirectories(folderPath);
+            foreach (string subdirectory in subdirectories)
+            {
+                // Получаем информацию о подпапке и добавляем ее в список
+                FileInformation subdirectoryInfo = GetFileInformation(subdirectory);
+                filesInfo.Add(subdirectoryInfo);
+
+                // Рекурсивно получаем информацию о файлах в подпапке
+                List<FileInformation> subdirectoryFilesInfo = AnalisFolderForInternet(subdirectory);
+                filesInfo.AddRange(subdirectoryFilesInfo);
+            }
+
+            return filesInfo;
+        }
+
+        public static FileInformation GetFileInformation(string path)
+        {
+            return new FileInformation()
+            {
+                Name = Path.GetFileName(path),
+                Path = path,
+                LastModified = File.GetLastWriteTime(path),
+                HashCode = CalculateFileHash(path),
+                IsDirectory = Directory.Exists(path)
+            };
+        }
+
+        public void SynchroPC(string nameFolder1, string nameFolder2, bool mode)
+        {
+            if (mode)
+            {
+                TwoSideSynhroFoldersPC(nameFolder1, nameFolder2);
+            }
+            else
+            {
+                OneSideSynhroFoldersPC(nameFolder1, nameFolder2);
             }
         }
 
 
-        private void OneSideSynhroFolders(string folder1, string folder2)
+        private void OneSideSynhroFoldersPC(string folder1, string folder2)
         {
             // Получаем информацию о файлах в каждой из папок
             string[] folder1Files = Directory.GetFiles(folder1);
@@ -354,20 +405,20 @@ namespace vkrSynchroFile
                 {
                     // Если подпапка с таким же именем есть во второй папке,
                     // вызываем метод анализа для этой подпапки
-                    OneSideSynhroFolders(subdirectory1, subdirectory2);
+                    OneSideSynhroFoldersPC(subdirectory1, subdirectory2);
                 }
                 else
                 {
                     // Если подпапки нет во второй папке, создаем ее
                     Directory.CreateDirectory(subdirectory2);
                     // и вызываем метод анализа для этой подпапки
-                    OneSideSynhroFolders(subdirectory1, subdirectory2);
+                    OneSideSynhroFoldersPC(subdirectory1, subdirectory2);
                 }
             }
         }
 
 
-        private void TwoSideSynhroFolders(string folder1, string folder2)
+        private void TwoSideSynhroFoldersPC(string folder1, string folder2)
         {
             // Получаем информацию о файлах в каждой из папок
             string[] folder1Files = Directory.GetFiles(folder1);
@@ -439,14 +490,14 @@ namespace vkrSynchroFile
                 {
                     // Если подпапка с таким же именем есть во второй папке,
                     // вызываем метод анализа для этой подпапки
-                    TwoSideSynhroFolders(subdirectory1, subdirectory2);
+                    TwoSideSynhroFoldersPC(subdirectory1, subdirectory2);
                 }
                 else
                 {
                     // Если подпапки нет во второй папке, создаем ее
                     Directory.CreateDirectory(subdirectory2);
                     // и вызываем метод анализа для этой подпапки
-                    TwoSideSynhroFolders(subdirectory1, subdirectory2);
+                    TwoSideSynhroFoldersPC(subdirectory1, subdirectory2);
                 }
             }
             // Проверяем наличие подпапок из folder2 в folder1
@@ -460,10 +511,11 @@ namespace vkrSynchroFile
                     // Если подпапки нет в первой папке, создаем ее
                     Directory.CreateDirectory(subdirectory1);
                     // и вызываем метод анализа для этой подпапки
-                    TwoSideSynhroFolders(subdirectory1, subdirectory2);
+                    TwoSideSynhroFoldersPC(subdirectory1, subdirectory2);
                 }
             }
         }
+
         private void SyncFile(string filePath, string sourceFolder, string targetFolder)
         {
             string sourcePath = Path.Combine(sourceFolder, Path.GetFileName(filePath));
@@ -494,15 +546,19 @@ namespace vkrSynchroFile
             public string HashCode { get; set; }
         }
 
-        public string CalculateFileHash(string filePath)
+        public static string CalculateFileHash(string path)
         {
-            HashAlgorithm algorithm = new SHA256Managed();
-            using (FileStream stream = File.OpenRead(filePath))
+            if (!File.Exists(path)) return null;
+
+            using (var algorithm = SHA256.Create())
             {
-                byte[] hashBytes = algorithm.ComputeHash(stream);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                using (var stream = File.OpenRead(path))
+                {
+                    byte[] hashBytes = algorithm.ComputeHash(stream);
+                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                }
             }
-        } 
+        }
 
         private void CopyRowButton_Click(object sender, RoutedEventArgs e)
         {
