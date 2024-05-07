@@ -621,9 +621,11 @@ namespace vkrSynchroFile
         // Функция для получения относительного пути относительно folder1path
         private string GetRelativePath(string fullPath, string basePath)
         {
-            Uri fullUri = new Uri(fullPath);
+            /*Uri fullUri = new Uri(fullPath);
             Uri baseUri = new Uri(basePath);
-            return baseUri.MakeRelativeUri(fullUri).ToString();
+            return baseUri.MakeRelativeUri(fullUri).ToString();*/
+            string relativePath = Path.GetRelativePath(basePath, fullPath).Replace('\\', '/');
+            return relativePath;
         }
 
         private List<FileInformation> AnalisFolderForInternet(string folderPath)
