@@ -118,7 +118,7 @@ namespace vkrSynchroFile
 
                     SQLiteManager db = new SQLiteManager();
                     DirectoryInfo directoryInfo = new DirectoryInfo(folder1path);
-                    db.insertInternetDB(result.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), result.uid, result.profileUID, true);
+                    db.insertInternetDB(synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), result.uid, result.profileUID, true);
                     this.Close();
                 }
                 /*SQLiteManager db = new SQLiteManager();
