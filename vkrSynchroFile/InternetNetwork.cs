@@ -694,7 +694,7 @@ namespace vkrSynchroFile
                                     profileUID = internet_SelectSecondFolder.uniqueId
                                 };
                                 SendConfirmation(newRequest, client);
-                                mainWindowInstance.TableUpdate();
+                                //mainWindowInstance.TableUpdate();
                             }
                             else
                             {
@@ -712,7 +712,7 @@ namespace vkrSynchroFile
                             dbLite.deleteDB_Internet(request.uid, request.profileUID);
                             Request newRequest = new Request();
                             SendConfirmation(newRequest, client);
-                            mainWindowInstance.TableUpdate();
+                            //mainWindowInstance.TableUpdate();
                         }
                         else
                         {
@@ -855,7 +855,8 @@ namespace vkrSynchroFile
                     if (!fileInfo2.IsDirectory)
                     {
                         File.Delete(fileInfo2.Path);
-                    }else
+                    }
+                    else
                     {
                         Directory.Delete(fileInfo2.Path, true);
                     }
