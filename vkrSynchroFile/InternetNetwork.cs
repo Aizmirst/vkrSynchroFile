@@ -810,7 +810,7 @@ namespace vkrSynchroFile
                 if (!fileInfo.IsDirectory)
                 {
                     string fileName = GetRelativePath(fileInfo.Path, folder1path);
-                    string filePath2 = Path.Combine(folder2, fileName);
+                    string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
 
                     // Получаем информацию о файле из списка folder2List
                     var fileData2 = folder2List.FirstOrDefault(f => f.Name == fileInfo.Name && !f.IsDirectory);
@@ -834,7 +834,7 @@ namespace vkrSynchroFile
                 else
                 {
                     string directoryName = GetRelativePath(fileInfo.Path, folder1path);
-                    string directoryPath2 = Path.Combine(folder2, directoryName);
+                    string directoryPath2 = Path.Combine(folder2, directoryName.Replace('/', '\\'));
                     if (!Directory.Exists(directoryPath2))
                     {
                         // Если подпапки нет во второй папке, создаем ее
@@ -847,18 +847,18 @@ namespace vkrSynchroFile
             foreach (var fileInfo2 in folder2List)
             {
                 string fileName = GetRelativePath(fileInfo2.Path, folder2);
-                string filePath1 = Path.Combine(folder1path, fileName);
+                string filePath1 = Path.Combine(folder1path, fileName.Replace('/', '\\'));
 
                 // Если файл отсутствует в первом списке, удаляем его
                 if (!fileList.Any(f => f.Path == filePath1))
                 {
                     if (!fileInfo2.IsDirectory)
                     {
-                        File.Delete(filePath1);
+                        File.Delete(fileInfo2.Path);
                     }
                     else
                     {
-                        Directory.Delete(filePath1, true);
+                        Directory.Delete(fileInfo2.Path, true);
                     }
                 }
             }
@@ -877,7 +877,7 @@ namespace vkrSynchroFile
                 if (!fileInfo.IsDirectory)
                 {
                     string fileName = GetRelativePath(fileInfo.Path, folder1path);
-                    string filePath2 = Path.Combine(folder2, fileName);
+                    string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
 
                     // Получаем информацию о файле из списка folder2List
                     var fileData2 = folder2List.FirstOrDefault(f => f.Name == fileInfo.Name && !f.IsDirectory);
@@ -912,7 +912,7 @@ namespace vkrSynchroFile
                 else
                 {
                     string directoryName = GetRelativePath(fileInfo.Path, folder1path);
-                    string directoryPath2 = Path.Combine(folder2, directoryName);
+                    string directoryPath2 = Path.Combine(folder2, directoryName.Replace('/', '\\'));
                     if (!Directory.Exists(directoryPath2))
                     {
                         // Если подпапки нет во второй папке, создаем ее
@@ -925,7 +925,7 @@ namespace vkrSynchroFile
             foreach (var fileInfo2 in folder2List)
             {
                 string fileName = GetRelativePath(fileInfo2.Path, folder2);
-                string filePath1 = Path.Combine(folder1path, fileName);
+                string filePath1 = Path.Combine(folder1path, fileName.Replace('/', '\\'));
 
                 // Если файл отсутствует в первом списке, удаляем его
                 if (!fileList.Any(f => f.Path == filePath1))
@@ -957,7 +957,7 @@ namespace vkrSynchroFile
             foreach(var fileInfo in list)
             {
                 string fileName = GetRelativePath(fileInfo.Path, folder1path);
-                string filePath2 = Path.Combine(folder2, fileName);
+                string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
                 // Сохраняем файл по пути filePath2
                 File.WriteAllBytes(filePath2, fileInfo.FileData);
             }

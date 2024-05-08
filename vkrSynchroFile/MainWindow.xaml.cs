@@ -352,7 +352,7 @@ namespace vkrSynchroFile
             foreach (string filePath1 in folder1Files)
             {
                 string fileName = Path.GetFileName(filePath1);
-                string filePath2 = Path.Combine(folder2, fileName);
+                string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
 
                 // Если файл с таким же именем есть во второй папке
                 if (Array.Exists(folder2Files, f => Path.GetFileName(f) == fileName))
@@ -381,7 +381,7 @@ namespace vkrSynchroFile
             foreach (string filePath2 in folder2Files)
             {
                 string fileName = Path.GetFileName(filePath2);
-                string filePath1 = Path.Combine(folder1, fileName);
+                string filePath1 = Path.Combine(folder1, fileName.Replace('/', '\\'));
 
                 // Если файл отсутствует в первой папке, удаляем его из второй
                 if (!File.Exists(filePath1))
@@ -398,7 +398,7 @@ namespace vkrSynchroFile
             foreach (string subdirectory2 in subdirectories2)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory2);
-                string subdirectory1 = Path.Combine(folder1, subdirectoryName);
+                string subdirectory1 = Path.Combine(folder1, subdirectoryName.Replace('/', '\\'));
 
                 // Если подпапки нет в первой папке, удаляем ее
                 if (!Array.Exists(subdirectories1, d => Path.GetFileName(d) == subdirectoryName))
@@ -411,7 +411,7 @@ namespace vkrSynchroFile
             foreach (string subdirectory1 in subdirectories1)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory1);
-                string subdirectory2 = Path.Combine(folder2, subdirectoryName);
+                string subdirectory2 = Path.Combine(folder2, subdirectoryName.Replace('/', '\\'));
 
                 if (Array.Exists(subdirectories2, d => Path.GetFileName(d) == subdirectoryName))
                 {
@@ -440,7 +440,7 @@ namespace vkrSynchroFile
             foreach (string filePath1 in folder1Files)
             {
                 string fileName = Path.GetFileName(filePath1);
-                string filePath2 = Path.Combine(folder2, fileName);
+                string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
 
                 // Если файл с таким же именем есть во второй папке
                 if (Array.Exists(folder2Files, f => Path.GetFileName(f) == fileName))
@@ -478,7 +478,7 @@ namespace vkrSynchroFile
             foreach (string filePath2 in folder2Files)
             {
                 string fileName = Path.GetFileName(filePath2);
-                string filePath1 = Path.Combine(folder1, fileName);
+                string filePath1 = Path.Combine(folder1, fileName.Replace('/', '\\'));
 
                 // Если файл отсутствует в первой папке
                 if (!File.Exists(filePath1))
@@ -496,7 +496,7 @@ namespace vkrSynchroFile
             foreach (string subdirectory1 in subdirectories1)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory1);
-                string subdirectory2 = Path.Combine(folder2, subdirectoryName);
+                string subdirectory2 = Path.Combine(folder2, subdirectoryName.Replace('/', '\\'));
 
                 if (Array.Exists(subdirectories2, d => Path.GetFileName(d) == subdirectoryName))
                 {
@@ -516,7 +516,7 @@ namespace vkrSynchroFile
             foreach (string subdirectory2 in subdirectories2)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory2);
-                string subdirectory1 = Path.Combine(folder1, subdirectoryName);
+                string subdirectory1 = Path.Combine(folder1, subdirectoryName.Replace('/', '\\'));
 
                 if (!Array.Exists(subdirectories1, d => Path.GetFileName(d) == subdirectoryName))
                 {
@@ -530,15 +530,15 @@ namespace vkrSynchroFile
 
         private void SyncFile(string filePath, string sourceFolder, string targetFolder)
         {
-            string sourcePath = Path.Combine(sourceFolder, Path.GetFileName(filePath));
-            string targetPath = Path.Combine(targetFolder, Path.GetFileName(filePath));
+            string sourcePath = Path.Combine(sourceFolder, Path.GetFileName(filePath).Replace('/', '\\'));
+            string targetPath = Path.Combine(targetFolder, Path.GetFileName(filePath).Replace('/', '\\'));
             File.Copy(sourcePath, targetPath, true); // Перезаписываем файл в целевой папке
         }
 
         private void CopyFile(string filePath, string sourceFolder, string targetFolder)
         {
-            string sourcePath = Path.Combine(sourceFolder, Path.GetFileName(filePath));
-            string targetPath = Path.Combine(targetFolder, Path.GetFileName(filePath));
+            string sourcePath = Path.Combine(sourceFolder, Path.GetFileName(filePath).Replace('/', '\\'));
+            string targetPath = Path.Combine(targetFolder, Path.GetFileName(filePath).Replace('/', '\\'));
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath)); // Создаем необходимые подпапки
             File.Copy(sourcePath, targetPath, true); // Копируем файл в целевую папку
         }
