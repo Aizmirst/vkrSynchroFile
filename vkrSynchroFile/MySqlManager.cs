@@ -76,11 +76,11 @@ namespace vkrSynchroFile
             connection.Close();*/
 
             string sql = @"INSERT INTO `Identifiers` (`ip`, `uniqueID`) VALUES (@ip, @uniqueID);";
-            bool success = false;
-            int attempts = 0;
+            //bool success = false;
+            //int attempts = 0;
 
-            while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
-            {
+            //while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
+            //{
                 try
                 {
                     connection.Open();
@@ -88,11 +88,11 @@ namespace vkrSynchroFile
                     cmd.Parameters.AddWithValue("@ip", ip);
                     cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
                     cmd.ExecuteNonQuery();
-                    success = true; // Успешно отправлено
+                    //success = true; // Успешно отправлено
                 }
                 catch (Exception ex)
                 {
-                    attempts++; // Увеличиваем количество попыток
+                   // attempts++; // Увеличиваем количество попыток
                                 // Здесь можно добавить логирование ошибки, чтобы понять причину
                     Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
                 }
@@ -100,13 +100,13 @@ namespace vkrSynchroFile
                 {
                     connection.Close(); // Всегда закрываем соединение после попытки
                 }
-            }
+            //}
 
-            if (!success)
+            /*if (!success)
             {
                 Console.WriteLine("Не удалось выполнить запрос после 3 попыток.");
                 // Здесь можно принять решение о дальнейших действиях, например, выйти из метода или сгенерировать исключение.
-            }
+            }*/
         }
 
         public bool searchDB(string uid)
@@ -132,12 +132,12 @@ namespace vkrSynchroFile
             }*/
 
             string sql = @"SELECT `id` FROM `Identifiers` WHERE `uniqueID` = @uniqueID";
-            bool success = false;
-            int attempts = 0;
+            //bool success = false;
+            //int attempts = 0;
             bool result = false;
 
-            while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
-            {
+            //while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
+            //{
                 try
                 {
                     connection.Open();
@@ -150,11 +150,11 @@ namespace vkrSynchroFile
                         result = true;
                     }
 
-                    success = true; // Успешно выполнено
+                    //success = true; // Успешно выполнено
                 }
                 catch (Exception ex)
                 {
-                    attempts++; // Увеличиваем количество попыток
+                    //attempts++; // Увеличиваем количество попыток
                                 // Здесь можно добавить логирование ошибки, чтобы понять причину
                     Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
                 }
@@ -162,7 +162,7 @@ namespace vkrSynchroFile
                 {
                     connection.Close(); // Всегда закрываем соединение после попытки
                 }
-            }
+            //}
 
             return result;
         }
@@ -172,11 +172,11 @@ namespace vkrSynchroFile
 
             string sql = @"SELECT `ip` FROM `Identifiers` WHERE `uniqueID` = @uniqueID";
             string ip = "null";
-            bool success = false;
-            int attempts = 0;
+            //bool success = false;
+            //int attempts = 0;
 
-            while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
-            {
+            //while (!success && attempts < 3) // Попытаемся отправить запрос не более 3 раз
+            //{
                 try
                 {
                     connection.Open();
@@ -189,11 +189,11 @@ namespace vkrSynchroFile
                         ip = resultObj.ToString();
                     }
 
-                    success = true; // Успешно выполнено
+                    //success = true; // Успешно выполнено
                 }
                 catch (Exception ex)
                 {
-                    attempts++; // Увеличиваем количество попыток
+                    //attempts++; // Увеличиваем количество попыток
                                 // Здесь можно добавить логирование ошибки, чтобы понять причину
                     Console.WriteLine("Ошибка при отправке запроса: " + ex.Message);
                 }
@@ -201,7 +201,7 @@ namespace vkrSynchroFile
                 {
                     connection.Close(); // Всегда закрываем соединение после попытки
                 }
-            }
+            //}
 
             return ip;
         }
