@@ -935,6 +935,7 @@ namespace vkrSynchroFile
                         FileInformation fileInfo = GetFileInformation(fileInfo2.Path);
                         byte[] fileData = File.ReadAllBytes(fileInfo2.Path);
                         fileInfo.ForSynchro = true;
+                        fileInfo.Path = filePath1;
                         fileInfo.FileData = fileData;
                         newList.Add(fileInfo);
                     }
