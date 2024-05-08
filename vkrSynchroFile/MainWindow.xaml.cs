@@ -257,12 +257,6 @@ namespace vkrSynchroFile
                 string userIP = dbMySQL.searchIP_DB(userUID);
                 string folderPath = dbLite.getFolderPathInternetProfile(profileUID);
                 internetNetwork.TwoSideSynchroSend(userIP, profileUID, folderPath, result);
-                /*string tt = "";
-                foreach (var fileInfo in result)
-                {
-                    tt += $"Name: {fileInfo.FileName} Path: {fileInfo.FullPath} Hash Code: {fileInfo.HashCode} Last Modified: {fileInfo.LastModified} Is Directory: {fileInfo.IsDirectory} \n\n";
-                }
-                MessageBox.Show(tt);*/
             }
             else
             {
