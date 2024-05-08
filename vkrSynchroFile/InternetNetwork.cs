@@ -756,7 +756,7 @@ namespace vkrSynchroFile
                         }
                         else
                         {
-                            MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                            MessageBox.Show("Ошибка в идентификаторе второго устройства!");
                         }
                         break;
                     case 6:
@@ -854,11 +854,11 @@ namespace vkrSynchroFile
                 {
                     if (!fileInfo2.IsDirectory)
                     {
-                        File.Delete(fileInfo2.Path);
+                        File.Delete(filePath1);
                     }
                     else
                     {
-                        Directory.Delete(fileInfo2.Path, true);
+                        Directory.Delete(filePath1, true);
                     }
                 }
             }

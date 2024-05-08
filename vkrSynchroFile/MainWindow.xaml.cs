@@ -277,7 +277,7 @@ namespace vkrSynchroFile
                     }
                     else
                     {
-                        MessageBox.Show("Ошибка с идентификаторе второго устройства!");
+                        MessageBox.Show("Ошибка в идентификаторе второго устройства!");
                     }
                 }
                 else
