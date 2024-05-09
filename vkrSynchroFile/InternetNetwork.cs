@@ -1,26 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.IO;
 using System.Net;
-//using Newtonsoft.Json;
-using System.Text.Json;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using MySqlX.XDevAPI.Common;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Mysqlx.Crud;
-using Org.BouncyCastle.Asn1.X509;
-using static vkrSynchroFile.MainWindow;
+using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Reflection;
-using static vkrSynchroFile.InternetNetwork;
-using Microsoft.VisualBasic.ApplicationServices;
+using System.Text;
+using System.Text.Json;
+using System.Windows;
+using static vkrSynchroFile.MainWindow;
 
 namespace vkrSynchroFile
 {
@@ -28,12 +13,11 @@ namespace vkrSynchroFile
     {
         private MainWindow mainWindowInstance; // Поле для хранения ссылки на экземпляр MainWindow
 
-        // Конструктор, который принимает ссылку на экземпляр MainWindow
         public InternetNetwork(MainWindow mainWindow)
         {
             mainWindowInstance = mainWindow;
         }
-        
+
         public InternetNetwork()
         {
         }
@@ -63,8 +47,8 @@ namespace vkrSynchroFile
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -92,18 +76,11 @@ namespace vkrSynchroFile
                     stream.Write(requestDataBytes, 0, requestDataBytes.Length);
 
                     // Получение и обработка ответа от сервера
-                    Request streamResult =  ProcessServerResponse(stream);
-
-                    /*// Ждем подтверждение от сервера
-                    byte[] buffer = new byte[256];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
+                    Request streamResult = ProcessServerResponse(stream);
 
                     // Закрываем соединение
                     stream.Close();
                     client.Close();
-
 
                     if (streamResult == null)
                     {
@@ -130,14 +107,15 @@ namespace vkrSynchroFile
             try
             {
                 MySqlManager myDB = new MySqlManager();
-                if (myDB.searchDB(userUID)){
+                if (myDB.searchDB(userUID))
+                {
                     string ip = myDB.searchIP_DB(userUID);
 
                     if (PingDevice(ip))
                     {
                         // IP-адрес и порт сервера, к которому мы хотим подключиться
-                        string serverIP = ip; // Замените на IP-адрес вашего сервера
-                        int serverPort = 12345; // Замените на порт вашего сервера
+                        string serverIP = ip;
+                        int serverPort = 12345;
 
                         // Создание экземпляра TcpClient для подключения к серверу
                         TcpClient client = new TcpClient(serverIP, serverPort);
@@ -208,8 +186,8 @@ namespace vkrSynchroFile
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -251,15 +229,15 @@ namespace vkrSynchroFile
             }
         }
 
-        public void OneSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo) 
+        public void OneSideSynchroSend(string ip, string profileUID, string folderPath, List<FileInformation> filesInfo)
         {
             try
             {
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -298,18 +276,11 @@ namespace vkrSynchroFile
                     }
                     else
                     {
-                        // Обработка ответа прошла успешно, здесь можно отправить еще один запрос, если нужно
-
-                        // Например:
+                        // Обработка ответа прошла успешно
                         List<FileInformation> listForSynchro = OneSideReadyFilesForSend(streamResult.fileInformation);
                         OneSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
 
                     }
-                    /*// Ждем подтверждение от сервера
-                    byte[] buffer = new byte[256];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
 
                     // Закрываем соединение
                     stream.Close();
@@ -347,8 +318,8 @@ namespace vkrSynchroFile
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -408,8 +379,8 @@ namespace vkrSynchroFile
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -448,16 +419,9 @@ namespace vkrSynchroFile
                     }
                     else
                     {
-                        // Обработка ответа прошла успешно, здесь можно отправить еще один запрос, если нужно
                         List<FileInformation> listForSynchro = TwoSideReadyFilesForSend(streamResult.fileInformation, folderPath);
                         TwoSideSynchroSendFile(ip, profileUID, folderPath, listForSynchro);
-
                     }
-                    /*// Ждем подтверждение от сервера
-                    byte[] buffer = new byte[256];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string confirmationMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    MessageBox.Show("Подтверждение от сервера: " + confirmationMessage, "Уведомление");*/
 
                     // Закрываем соединение
                     stream.Close();
@@ -495,15 +459,13 @@ namespace vkrSynchroFile
                 }
                 else
                 {
-                    /*string directoryName = GetRelativePath(fileInfo.Path, folder1path);
-                    string directoryPath2 = Path.Combine(folder2, directoryName);*/
                     if (!Directory.Exists(fileInfo.Path))
                     {
                         // Если подпапки нет во второй папке, создаем ее
                         Directory.CreateDirectory(fileInfo.Path);
                     }
                 }
-                
+
             }
             return newList;
         }
@@ -515,8 +477,8 @@ namespace vkrSynchroFile
                 if (PingDevice(ip))
                 {
                     // IP-адрес и порт сервера, к которому мы хотим подключиться
-                    string serverIP = ip; // Замените на IP-адрес вашего сервера
-                    int serverPort = 12345; // Замените на порт вашего сервера
+                    string serverIP = ip;
+                    int serverPort = 12345;
 
                     // Создание экземпляра TcpClient для подключения к серверу
                     TcpClient client = new TcpClient(serverIP, serverPort);
@@ -670,14 +632,9 @@ namespace vkrSynchroFile
                         {
                             // Создаем экземпляр диалогового окна и передаем значение в конструкторе
                             Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder();
-                            // Устанавливаем владельца диалогового окна
-                            /*internet_SelectSecondFolder.Owner = Application.Current.MainWindow;
-                            internet_SelectSecondFolder.senderUID = request.uid;*/
 
                             // Показываем диалоговое окно
                             internet_SelectSecondFolder.ShowDialog();
-                            //MessageBox.Show(internet_SelectSecondFolder.uniqueId);
-                            //MessageBox.Show(internet_SelectSecondFolder.folderpath);
                             if (internet_SelectSecondFolder.acceptProfile)
                             {
                                 MySqlManager myDB = new MySqlManager();
@@ -686,7 +643,6 @@ namespace vkrSynchroFile
                                 SQLiteManager db = new SQLiteManager();
                                 DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
                                 db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId, false);
-                                //AcceptProfile(ip, internet_SelectSecondFolder.uniqueId);
                                 string myUID = InternetProfileMethods.myUserUID();
                                 Request newRequest = new Request
                                 {
@@ -694,7 +650,6 @@ namespace vkrSynchroFile
                                     profileUID = internet_SelectSecondFolder.uniqueId
                                 };
                                 SendConfirmation(newRequest, client);
-                                //mainWindowInstance.TableUpdate();
                             }
                             else
                             {
@@ -712,7 +667,6 @@ namespace vkrSynchroFile
                             dbLite.deleteDB_Internet(request.uid, request.profileUID);
                             Request newRequest = new Request();
                             SendConfirmation(newRequest, client);
-                            //mainWindowInstance.TableUpdate();
                         }
                         else
                         {
@@ -743,7 +697,7 @@ namespace vkrSynchroFile
                         WriteNewFiles(files, request.folderPath, db4.getFolderPathInternetProfile(request.profileUID));
                         Request newReq = null;
                         SendConfirmation(newReq, client);
-                        break; 
+                        break;
                     case 5:
                         MySqlManager dbMySQL = new MySqlManager();
                         if (dbMySQL.searchDB(request.uid))
@@ -791,9 +745,6 @@ namespace vkrSynchroFile
                 Console.WriteLine("Получен запрос, который не является JSON.");
             }
 
-            // Отправка подтверждения клиенту
-            //SendConfirmation(client);
-
             stream.Close();
             client.Close();
 
@@ -802,7 +753,7 @@ namespace vkrSynchroFile
 
         private List<FileInformation> OneSideAnalisFileInformation(List<FileInformation> fileList, string folder1path, string folder2)
         {
-            List <FileInformation> newList = new List<FileInformation>();
+            List<FileInformation> newList = new List<FileInformation>();
             List<FileInformation> folder2List = AnalisFolderForInternet(folder2);
 
             foreach (var fileInfo in fileList)
@@ -886,7 +837,7 @@ namespace vkrSynchroFile
                     {
                         if (fileInfo.HashCode != fileData2.HashCode)
                         {
-                            if(fileInfo.LastModified > fileData2.LastModified)
+                            if (fileInfo.LastModified > fileData2.LastModified)
                             {
                                 // Если file1 более новый, значит запрашиваем его на синхронизацию
                                 fileInfo.ForSynchro = true;
@@ -899,7 +850,7 @@ namespace vkrSynchroFile
                                 fileInfo.FileData = fileData;
                                 newList.Add(fileInfo);
                             }
-                            
+
                         }
                     }
                     else
@@ -954,7 +905,7 @@ namespace vkrSynchroFile
 
         private void WriteNewFiles(List<FileInformation> list, string folder1path, string folder2)
         {
-            foreach(var fileInfo in list)
+            foreach (var fileInfo in list)
             {
                 string fileName = GetRelativePath(fileInfo.Path, folder1path);
                 string filePath2 = Path.Combine(folder2, fileName.Replace('/', '\\'));
@@ -966,9 +917,6 @@ namespace vkrSynchroFile
         // Функция для получения относительного пути относительно folder1path
         private string GetRelativePath(string fullPath, string basePath)
         {
-            /*Uri fullUri = new Uri(fullPath);
-            Uri baseUri = new Uri(basePath);
-            return baseUri.MakeRelativeUri(fullUri).ToString();*/
             string relativePath = Path.GetRelativePath(basePath, fullPath).Replace('\\', '/');
             return relativePath;
         }
@@ -1051,9 +999,6 @@ namespace vkrSynchroFile
             try
             {
                 NetworkStream stream = client.GetStream();
-                /*string confirmationMessage = "Сообщение получено!";
-                byte[] confirmationData = Encoding.UTF8.GetBytes(confirmationMessage);
-                stream.Write(confirmationData, 0, confirmationData.Length);*/
 
                 // Преобразование объекта запроса в JSON
                 string requestData = JsonSerializer.Serialize(request);

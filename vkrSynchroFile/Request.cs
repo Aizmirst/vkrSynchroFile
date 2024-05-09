@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace vkrSynchroFile
+﻿namespace vkrSynchroFile
 {
     public class Request
     {
         public int Type { get; set; }
 
         public string uid { get; set; }
-        
+
         // путь папки на клиентсокм устройстве, для синхронизации
         public string folderPath { get; set; }
 

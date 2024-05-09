@@ -1,26 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ookii.Dialogs.Wpf;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Ookii.Dialogs.Wpf;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace vkrSynchroFile
 {
-    /// <summary>
-    /// Логика взаимодействия для Internet_CreateProfile.xaml
-    /// </summary>
     public partial class Internet_CreateProfile : Window
     {
         private string uid;
@@ -109,7 +93,7 @@ namespace vkrSynchroFile
             {
                 InternetNetwork internetNetwork = new InternetNetwork();
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
-                Request result = internetNetwork.SendProfile(userIP, synhroMode); 
+                Request result = internetNetwork.SendProfile(userIP, synhroMode);
 
                 if (result != null)
                 {

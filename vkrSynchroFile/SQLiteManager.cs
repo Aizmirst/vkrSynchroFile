@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Data.SQLite;
-using System.Collections.ObjectModel;
-using System.Windows.Documents;
-using System.Xml.Linq;
 
 namespace vkrSynchroFile
 {
@@ -269,7 +261,7 @@ namespace vkrSynchroFile
             deleteFolder(fold1Id);
             deleteFolder(fold2Id);
         }
-        
+
         public void deleteDB_Internet(string userUID, string profUID)
         {
             int folderID = deleteProfileInternet(userUID, profUID);
@@ -319,11 +311,10 @@ namespace vkrSynchroFile
             // Возвращаем значение folder удаленной строки
             return deletedFolderId;
         }
-        
+
         private void deleteProfilePC(int profId)
         {
             string sql = $"DELETE FROM PC_Profiles WHERE id_profile='{profId}';";
-            //Console.WriteLine(sql);
             connection.Open();
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.ExecuteNonQuery();
@@ -333,7 +324,6 @@ namespace vkrSynchroFile
         private void deleteFolder(int folderId)
         {
             string sql = $"DELETE FROM Folders WHERE id_folder='{folderId}';";
-            //Console.WriteLine(sql);
             connection.Open();
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.ExecuteNonQuery();
@@ -348,7 +338,7 @@ namespace vkrSynchroFile
 
         public void updateDB_PC(int profile_id, bool two_sided,
             int folder1Id, string name1, string path1,
-            int folder2Id, string name2, string path2) //более правильно и безопаснее, но чуть геморнее, ибо надо учитывать типы
+            int folder2Id, string name2, string path2)
         {
             updateFolder(folder1Id, name1, path1);
             updateFolder(folder2Id, name2, path2);

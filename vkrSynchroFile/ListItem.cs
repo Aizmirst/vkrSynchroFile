@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace vkrSynchroFile
+﻿namespace vkrSynchroFile
 {
     public class ListItem
     {
@@ -24,7 +18,7 @@ namespace vkrSynchroFile
         public int folder2id { get; set; }
         public string folder2name { get; set; }
         public string folder2path { get; set; }
-        
+
         //Внутри 1 пк или по сети
         public int profType { get; set; }
 
@@ -34,7 +28,7 @@ namespace vkrSynchroFile
         // uid второго пользователя в сетевом профиле
         public string userUID { get; set; }
         public string profileUID { get; set; }
-        
+
         // флаг для отметки создателя сетевого профиля
         public bool mainUser { get; set; }
     }
