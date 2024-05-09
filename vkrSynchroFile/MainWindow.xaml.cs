@@ -1,31 +1,11 @@
-﻿using Microsoft.VisualBasic.ApplicationServices;
-using MySqlX.XDevAPI.Common;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Path = System.IO.Path;
+using Timer = System.Timers.Timer;
 
 
 namespace vkrSynchroFile
@@ -37,6 +17,7 @@ namespace vkrSynchroFile
         private const string FirstRunFlagFileName = "firstrun.marker";
         private string uniqueId;
         InternetNetwork internetNetwork;
+        private Timer timer;
 
         public MainWindow()
         {
@@ -50,7 +31,7 @@ namespace vkrSynchroFile
             uniqueId = "";
             if (IsFirstRun())
             {
-                if(GetLocalIPAddress == null)
+                if (GetLocalIPAddress == null)
                 {
                     MessageBox.Show("ip для создание иденификатора не обнаружен.");
                 }
@@ -72,7 +53,7 @@ namespace vkrSynchroFile
 
                 if (ip != null)
                 {
-                    if(GetLocalIPAddress() != ip && GetLocalIPAddress() != null)
+                    if (GetLocalIPAddress() != ip && GetLocalIPAddress() != null)
                     {
                         //обновить ip в таблцие
                         dbMySQL.updateDB(GetLocalIPAddress(), uniqueId);
@@ -93,6 +74,35 @@ namespace vkrSynchroFile
                 // Изменить текст кнопки
                 copiedTextButton.Content = $"Ваш идентефикатор: {uniqueId}";
             }
+
+
+            // Создаем таймер
+            timer = new Timer();
+
+            // Устанавливаем интервал проверки в миллисекундах
+            timer.Interval = 1000; // Проверяем каждую секунду
+
+            // Устанавливаем обработчик события, который будет вызываться каждый раз при срабатывании таймера
+            timer.Elapsed += Timer_Elapsed;
+
+            // Запускаем таймер
+            timer.Start();
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Получаем текущее время
+            DateTime currentTime = DateTime.Now;
+
+            // Проверяем, если текущее время равно 00:00 или 12:00, то вызываем метод Synchro для всех элементов в itemListBox
+            if ((currentTime.Hour == 0 && currentTime.Minute == 0) || (currentTime.Hour == 12 && currentTime.Minute == 0))
+            {
+                // Вызываем метод Synchro для всех элементов в itemListBox
+                foreach (ListItem item in itemListBox.Items)
+                {
+                    Synchro(item);
+                }
+            }
         }
 
         public static string GetLocalIPAddress()
@@ -102,32 +112,6 @@ namespace vkrSynchroFile
                                 .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                                 .ToString();
             return ipAddress;
-
-            /*// Получаем список сетевых интерфейсов
-            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-            foreach (NetworkInterface networkInterface in networkInterfaces)
-            {
-                // Фильтруем интерфейсы, относящиеся к IPv4 и не являющиеся петлевыми (Loopback)
-                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
-                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
-                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.GigabitEthernet)
-                {
-                    // Получаем список IP-адресов для текущего интерфейса
-                    UnicastIPAddressInformationCollection ipAddresses = networkInterface.GetIPProperties().UnicastAddresses;
-
-                    foreach (UnicastIPAddressInformation ipAddress in ipAddresses)
-                    {
-                        // Исключаем петлевые адреса и адреса IPv6
-                        if (ipAddress.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ipAddress.Address))
-                        {
-                            return ipAddress.Address.ToString();
-                        }
-                    }
-                }
-            }
-            // Если не найдено подходящего IP-адреса, возвращаем null или пустую строку, в зависимости от ваших потребностей
-            return null;*/
         }
 
         private static bool IsFirstRun()
@@ -229,23 +213,27 @@ namespace vkrSynchroFile
                 }
             }
         }
-        
+
         private void SynchroFileButton(object sender, RoutedEventArgs e)
         {
             // Проверяем, есть ли выбранный элемент
             if (itemListBox.SelectedItem != null)
             {
                 ListItem selectedItem = (ListItem)itemListBox.SelectedItem;
+                Synchro(selectedItem);
+            }
+        }
 
-                switch (selectedItem.profType)
-                {
-                    case 1:
-                        SynchroPC(selectedItem.folder1path, selectedItem.folder2path, selectedItem.profMode);
-                        break;
-                    case 3:
-                        SynchroInternet(selectedItem.folder1path, selectedItem.userUID, selectedItem.profileUID, selectedItem.profMode, selectedItem.mainUser);
-                        break;
-                }
+        private void Synchro(ListItem selectedItem)
+        {
+            switch (selectedItem.profType)
+            {
+                case 1:
+                    SynchroPC(selectedItem.folder1path, selectedItem.folder2path, selectedItem.profMode);
+                    break;
+                case 3:
+                    SynchroInternet(selectedItem.folder1path, selectedItem.userUID, selectedItem.profileUID, selectedItem.profMode, selectedItem.mainUser);
+                    break;
             }
         }
 
@@ -260,7 +248,7 @@ namespace vkrSynchroFile
             }
             else
             {
-                if(mainUser)
+                if (mainUser)
                 {
                     if (dbMySQL.searchDB(userUID))
                     {
@@ -574,11 +562,5 @@ namespace vkrSynchroFile
             // Копирование текста в буфер обмена
             Clipboard.SetText(textToCopy);
         }
-
-        /*public static void openInternetProfileAccept(string senderUid)
-        {
-            Internet_SelectSecondFolder internet_SelectSecondFolder = new Internet_SelectSecondFolder(senderUid);
-            internet_SelectSecondFolder.ShowDialog();
-        }*/
     }
 }
