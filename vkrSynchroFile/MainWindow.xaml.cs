@@ -80,7 +80,7 @@ namespace vkrSynchroFile
             timer = new Timer();
 
             // Устанавливаем интервал проверки в миллисекундах
-            timer.Interval = 1000; // Проверяем каждую секунду
+            timer.Interval = 1000; // Проверка каждую секунду
 
             // Устанавливаем обработчик события, который будет вызываться каждый раз при срабатывании таймера
             timer.Elapsed += Timer_Elapsed;
@@ -94,10 +94,8 @@ namespace vkrSynchroFile
             // Получаем текущее время
             DateTime currentTime = DateTime.Now;
 
-            // Проверяем, если текущее время равно 00:00 или 12:00, то вызываем метод Synchro для всех элементов в itemListBox
             if ((currentTime.Hour == 0 && currentTime.Minute == 0) || (currentTime.Hour == 12 && currentTime.Minute == 0))
             {
-                // Вызываем метод Synchro для всех элементов в itemListBox
                 foreach (ListItem item in itemListBox.Items)
                 {
                     Synchro(item);

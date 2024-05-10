@@ -714,7 +714,7 @@ namespace vkrSynchroFile
                         }
                         break;
                     case 6:
-                        //Обработка односторонней синхронизации
+                        //Обработка двусторонней синхронизации
                         List<FileInformation> fileInformation6 = request.fileInformation;
 
                         // формирование списка файлов, которые нужно получить
