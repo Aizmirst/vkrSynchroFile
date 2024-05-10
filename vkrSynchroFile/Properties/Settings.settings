@@ -5,5 +5,8 @@
     <Setting Name="connectionString" Type="System.String" Scope="User">
       <Value Profile="(Default)">server=std-mysql.ist.mospolytech.ru; user=std_1590_test; database=std_1590_test; password=std_1590_test;</Value>
     </Setting>
+    <Setting Name="newconnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">server=std-mysql.ist.mospolytech.ru; user=serverSynchroFileDB; database=serverSynchroFileDB; password=testTEST2024!;</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

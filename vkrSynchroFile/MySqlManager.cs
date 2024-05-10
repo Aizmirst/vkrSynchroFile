@@ -5,7 +5,7 @@ namespace vkrSynchroFile
 
     internal class MySqlManager
     {
-        MySqlConnection connection = new MySqlConnection(Properties.Settings.Default.connectionString);
+        MySqlConnection connection = new MySqlConnection(Properties.Settings.Default.newconnectionString);
 
         /*public MySqlManager()
         {

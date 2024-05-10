@@ -35,5 +35,18 @@ namespace vkrSynchroFile.Properties {
                 this["connectionString"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("server=std-mysql.ist.mospolytech.ru; user=serverSynchroFileDB; database=serverSyn" +
+            "chroFileDB; password=testTEST2024!;")]
+        public string newconnectionString {
+            get {
+                return ((string)(this["newconnectionString"]));
+            }
+            set {
+                this["newconnectionString"] = value;
+            }
+        }
     }
 }
