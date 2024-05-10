@@ -146,7 +146,7 @@ namespace vkrSynchroFile
                     folder1path = reader.GetString(3),
                     userUID = reader.GetString(4),
                     profileUID = reader.GetString(5),
-                    text = $"Профиль №{startProfileNumber}. Тип: По сети. UID: {reader.GetString(5)}",
+                    text = $"Профиль №{startProfileNumber}. Тип: По локальной сети. UID: {reader.GetString(5)}",
                     profType = 3,
                     profMode = reader.GetBoolean(6),
                     mainUser = reader.GetBoolean(7),
