@@ -95,7 +95,7 @@ namespace vkrSynchroFile
             }
             else
             {
-                MessageBox.Show("Ошибка!");
+                MessageBox.Show("Ошибка! Не выбраны папки для синхронизации!");
             }
         }
 

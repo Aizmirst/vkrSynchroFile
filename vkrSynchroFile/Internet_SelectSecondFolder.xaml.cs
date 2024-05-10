@@ -51,7 +51,7 @@ namespace vkrSynchroFile
             }
             else
             {
-                MessageBox.Show("Ошибка!");
+                MessageBox.Show("Ошибка! Не указана папка синхронизации!");
             }
         }
 

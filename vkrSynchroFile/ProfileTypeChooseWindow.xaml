@@ -18,10 +18,10 @@
         <Grid Grid.Row="1">
             <StackPanel>
                 <Button Click="Action1_Click" Height="40" Margin="10">
-                    <TextBlock Text="Внутри 1 устройства" TextWrapping="Wrap" TextAlignment="Center" Margin="5"/>
+                    <TextBlock Text="Синхронизация внутри одного устройства" TextWrapping="Wrap" TextAlignment="Center" Margin="5"/>
                 </Button>
                 <Button Click="Action3_Click" Height="40" Margin="10">
-                    <TextBlock Text="Между устройствами в локальной сети" TextWrapping="Wrap" TextAlignment="Center" Margin="5"/>
+                    <TextBlock Text="Синхронизация между устройствами в локальной сети" TextWrapping="Wrap" TextAlignment="Center" Margin="5"/>
                 </Button>
             </StackPanel>
         </Grid>
