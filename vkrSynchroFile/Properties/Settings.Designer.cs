@@ -38,8 +38,8 @@ namespace vkrSynchroFile.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("server=std-mysql.ist.mospolytech.ru; user=serverSynchroFileDB; database=serverSyn" +
-            "chroFileDB; password=testTEST2024!;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("server=otleraram.beget.app; port=3306; user=default-db; database=default-db; pass" +
+            "word=wRGvFg9EQ&ru;")]
         public string newconnectionString {
             get {
                 return ((string)(this["newconnectionString"]));

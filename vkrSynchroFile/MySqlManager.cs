@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System.Windows;
 
 namespace vkrSynchroFile
 {
@@ -9,7 +10,7 @@ namespace vkrSynchroFile
 
         /*public MySqlManager()
         {
-            string sql = @"CREATE TABLE IF NOT EXISTS `Identifiers` (
+            *//*string sql = @"CREATE TABLE IF NOT EXISTS `Identifiers` (
                         `id` int(11) NOT NULL AUTO_INCREMENT,
                         `ip` text NOT NULL,
                         `uniqueID` text NOT NULL,
@@ -19,7 +20,28 @@ namespace vkrSynchroFile
             connection.Open();
             MySqlCommand cmd = new MySqlCommand(sql, connection);
             cmd.ExecuteNonQuery();
-            connection.Close();
+            connection.Close();*//*
+            try
+            {
+                // Открытие соединения
+                connection.Open();
+
+                // Теперь вы можете выполнять операции с базой данных
+
+                // Например, выполнение запроса SQL
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM ваша_таблица";
+                MessageBox.Show("cool: ");
+                // Выполнение запроса и обработка результата
+
+                // Закрытие соединения
+                connection.Close();
+            }
+            catch (MySqlException ex)
+            {
+                // Обработка ошибок подключения
+                MessageBox.Show("Ошибка подключения: ");
+            }
         }*/
 
         public void updateDB(string ip, string uniqueID)
