@@ -130,7 +130,13 @@ namespace vkrSynchroFile
                     {
                         if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
                         {
-                            Synchro(item);
+                            if(item.profType == 3 && item.mainUser == false)
+                            {
+                            }
+                            else
+                            {
+                                Synchro(item);
+                            }
                         }
                     }
                 }
@@ -146,7 +152,13 @@ namespace vkrSynchroFile
                     {
                         if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
                         {
-                            Synchro(item);
+                            if (item.profType == 3 && item.mainUser == false)
+                            {
+                            }
+                            else
+                            {
+                                Synchro(item);
+                            }
                         }
                     }
                 }
