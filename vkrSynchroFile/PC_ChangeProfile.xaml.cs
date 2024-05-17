@@ -1,6 +1,8 @@
 ﻿using Ookii.Dialogs.Wpf;
+using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace vkrSynchroFile
@@ -33,6 +35,54 @@ namespace vkrSynchroFile
             folder2path = selectedItem.folder2path;
             foldere1Info.Text = $"Имя папки: {selectedItem.folder1name};\nПолный путь: {selectedItem.folder1path}.";
             foldere2Info.Text = $"Имя папки: {selectedItem.folder2name};\nПолный путь: {selectedItem.folder2path}.";
+            
+            // загрузка дней
+            lowerRadioButton.IsChecked = selectedItem.auto_type;
+            string[] days = selectedItem.auto_time.Trim().Split(" ");
+            if (!selectedItem.auto_type)
+            {
+                foreach (var button in daysButtonsPanel.Children.OfType<ToggleButton>())
+                {
+                    if (days.Contains(button.Content.ToString()))
+                    {
+                        button.IsChecked = true;
+                    }
+                    else
+                    {
+                        button.IsChecked = false;
+                    }
+                }
+            }
+            else
+            {
+                calendar.SelectedDates.Clear();
+                foreach (var date in days)
+                {
+                    if (DateTime.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+                    {
+                        calendar.SelectedDates.Add(parsedDate);
+                    }
+                }
+            }
+
+            // Загрузка времени
+            string[] time = selectedItem.auto_time.Trim().Split(":");
+            string selectedHour = time[0];
+            string selectedMinute = time[1];
+            foreach (ComboBoxItem item in hoursComboBox.Items)
+            {
+                if (item.Content.ToString() == selectedHour)
+                {
+                    hoursComboBox.SelectedItem = item;
+                }
+            }
+            foreach (ComboBoxItem item in minutesComboBox.Items)
+            {
+                if (item.Content.ToString() == selectedMinute)
+                {
+                    minutesComboBox.SelectedItem = item;
+                }
+            }
         }
 
         private void centerRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -112,9 +162,33 @@ namespace vkrSynchroFile
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
                 DirectoryInfo directoryInfo2 = new DirectoryInfo(folder2path);
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
+                bool autoType = false;
+                string autoDay = "";
+                if (centerRadioButton.IsChecked == true)
+                {
+                    autoType = false;
+                    foreach (ToggleButton button in daysButtonsPanel.Children)
+                    {
+                        if (button.IsChecked == true)
+                        {
+                            autoDay += button.Content.ToString() + " ";
+                        }
+                    }
+                }
+                else
+                {
+                    autoType = true;
+                    foreach (var date in calendar.SelectedDates)
+                    {
+                        autoDay += ((DateTime)date).ToString("dd/MM/yyyy") + " ";
+                    }
+                }
+                string selectedHour = (hoursComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string selectedMinute = (minutesComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string autoTime = selectedHour + " " + selectedMinute;
                 db.updateDB_PC(profileID, synhroMode,
                     folder1ID, directoryInfo1.Name, directoryInfo1.FullName,
-                    folder2ID, directoryInfo2.Name, directoryInfo2.FullName);
+                    folder2ID, directoryInfo2.Name, directoryInfo2.FullName, autoType, autoDay, autoTime);
                 this.Close();
             }
             else

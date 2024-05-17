@@ -1,6 +1,7 @@
 ﻿using Ookii.Dialogs.Wpf;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace vkrSynchroFile
@@ -93,7 +94,31 @@ namespace vkrSynchroFile
             {
                 InternetNetwork internetNetwork = new InternetNetwork();
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
-                Request result = internetNetwork.SendProfile(userIP, synhroMode);
+                bool autoType = false;
+                string autoDay = "";
+                if (centerRadioButton.IsChecked == true)
+                {
+                    autoType = false;
+                    foreach (ToggleButton button in daysButtonsPanel.Children)
+                    {
+                        if (button.IsChecked == true)
+                        {
+                            autoDay += button.Content.ToString() + " ";
+                        }
+                    }
+                }
+                else
+                {
+                    autoType = true;
+                    foreach (var date in calendar.SelectedDates)
+                    {
+                        autoDay += ((DateTime)date).ToString("dd/MM/yyyy") + " ";
+                    }
+                }
+                string selectedHour = (hoursComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string selectedMinute = (minutesComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string autoTime = selectedHour + ":" + selectedMinute;
+                Request result = internetNetwork.SendProfile(userIP, synhroMode, autoType, autoDay, autoTime);
 
                 if (result != null)
                 {
@@ -102,7 +127,7 @@ namespace vkrSynchroFile
 
                     SQLiteManager db = new SQLiteManager();
                     DirectoryInfo directoryInfo = new DirectoryInfo(folder1path);
-                    db.insertInternetDB(synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), result.uid, result.profileUID, true);
+                    db.insertInternetDB(synhroMode, directoryInfo.Name, directoryInfo.FullName, result.uid, result.profileUID, true, autoType, autoDay, autoTime);
                     this.Close();
                 }
                 /*SQLiteManager db = new SQLiteManager();

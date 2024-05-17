@@ -1,6 +1,8 @@
 ﻿using Ookii.Dialogs.Wpf;
 using System.IO;
+using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace vkrSynchroFile
@@ -89,8 +91,32 @@ namespace vkrSynchroFile
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(folder1path);
                 DirectoryInfo directoryInfo2 = new DirectoryInfo(folder2path);
                 bool synhroMode = twoSideSynhroButton.IsChecked == true;
-                db.insertDB(synhroMode, directoryInfo1.Name, directoryInfo1.FullName, directoryInfo1.LastWriteTime, directoryInfo1.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length),
-                    directoryInfo2.Name, directoryInfo2.FullName, directoryInfo2.LastWriteTime, directoryInfo2.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length));
+                bool autoType = false;
+                string autoDay = "";
+                if (centerRadioButton.IsChecked == true)
+                {
+                    autoType = false;
+                    foreach (ToggleButton button in daysButtonsPanel.Children)
+                    {
+                        if (button.IsChecked == true)
+                        {
+                            autoDay += button.Content.ToString() + " ";
+                        }
+                    }
+                }
+                else
+                {
+                    autoType = true;
+                    foreach (var date in calendar.SelectedDates)
+                    {
+                        autoDay += ((DateTime)date).ToString("dd/MM/yyyy") + " ";
+                    }
+                }
+                string selectedHour = (hoursComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string selectedMinute = (minutesComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string autoTime = selectedHour + ":" + selectedMinute;
+                db.insertDB(synhroMode, directoryInfo1.Name, directoryInfo1.FullName,
+                directoryInfo2.Name, directoryInfo2.FullName, autoType, autoDay, autoTime);
                 this.Close();
             }
             else

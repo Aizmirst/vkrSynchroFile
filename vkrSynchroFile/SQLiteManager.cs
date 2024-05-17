@@ -20,6 +20,9 @@ namespace vkrSynchroFile
                                             "folder1 INTEGER NOT NULL," +
                                             "folder2 INTEGER NOT NULL," +
                                             "two_sided BOOLEAN NOT NULL," +
+                                            "auto_type BOOLEAN NOT NULL," +
+                                            "auto_day TEXT," +
+                                            "auto_time TEXT," +
                                             "FOREIGN KEY (folder1) REFERENCES Folders(id_folder)," +
                                             "FOREIGN KEY (folder2) REFERENCES Folders(id_folder))";
 
@@ -30,6 +33,9 @@ namespace vkrSynchroFile
                                             "profile_UID TEXT NOT NULL," +
                                             "two_sided BOOLEAN NOT NULL," +
                                             "mainUser BOOLEAN NOT NULL," +
+                                            "auto_type BOOLEAN NOT NULL," +
+                                            "auto_day TEXT," +
+                                            "auto_time TEXT," +
                                             "FOREIGN KEY (folder) REFERENCES Folders(id_folder))";
 
             SQLiteCommand command = new SQLiteCommand(createFoldersTable, connection);
@@ -127,7 +133,10 @@ namespace vkrSynchroFile
                 "p.id_user," +
                 "p.profile_UID," +
                 "p.two_sided, " +
-                "p.mainUser " +
+                "p.mainUser, " +
+                "p.auto_type, " +
+                "p.auto_day, " +
+                "p.auto_time " +
                 "FROM " +
                 "Internet_Profiles p " +
                 "JOIN " +
@@ -150,6 +159,9 @@ namespace vkrSynchroFile
                     profType = 3,
                     profMode = reader.GetBoolean(6),
                     mainUser = reader.GetBoolean(7),
+                    auto_type = reader.GetBoolean(8),
+                    auto_day = reader.GetString(9),
+                    auto_time = reader.GetString(10)
                 });
                 startProfileNumber++; // Увеличиваем номер профиля на 1
             }
@@ -169,7 +181,10 @@ namespace vkrSynchroFile
                 "f2.id_folder AS folder2_id, " +
                 "f2.folder_name AS folder2_name, " +
                 "f2.folder_path AS folder2_path, " +
-                "p.two_sided " +
+                "p.two_sided, " +
+                "p.auto_type, " +
+                "p.auto_day, " +
+                "p.auto_time " +
                 "FROM " +
                 "PC_Profiles p " +
                 "JOIN " +
@@ -193,7 +208,10 @@ namespace vkrSynchroFile
                     folder2path = reader.GetString(6),
                     text = $"Профиль №{startProfileNumber}. Тип: Внутри 1 ПК.",
                     profType = 1,
-                    profMode = reader.GetBoolean(7)
+                    profMode = reader.GetBoolean(7),
+                    auto_type = reader.GetBoolean(8),
+                    auto_day = reader.GetString(9),
+                    auto_time = reader.GetString(10)
                 });
                 startProfileNumber++; // Увеличиваем номер профиля на 1
             }
@@ -201,20 +219,20 @@ namespace vkrSynchroFile
             return items;
         }
 
-        public void insertDB(bool two_sided, string name1, string path1, DateTime changeTime1, long weight1, string name2, string path2, DateTime changeTime2, long weight2)
+        public void insertDB(bool two_sided, string name1, string path1, string name2, string path2, bool auto_type, string auto_day, string auto_time)
         {
-            int lastInsertedId1 = insertFolder(name1, path1, changeTime1, weight1);
-            int lastInsertedId2 = insertFolder(name2, path2, changeTime2, weight2);
-            insertProfile(lastInsertedId1, lastInsertedId2, two_sided);
+            int lastInsertedId1 = insertFolder(name1, path1);
+            int lastInsertedId2 = insertFolder(name2, path2);
+            insertProfile(lastInsertedId1, lastInsertedId2, two_sided, auto_type, auto_day, auto_time);
         }
 
-        public void insertInternetDB(bool two_sided, string name, string path, DateTime changeTime, long weight, string id_user, string profile_UID, bool mainUser)
+        public void insertInternetDB(bool two_sided, string name, string path, string id_user, string profile_UID, bool mainUser, bool auto_type, string auto_day, string auto_time)
         {
-            int lastInsertedId = insertFolder(name, path, changeTime, weight);
-            insertInternetProfile(lastInsertedId, id_user, profile_UID, two_sided, mainUser);
+            int lastInsertedId = insertFolder(name, path);
+            insertInternetProfile(lastInsertedId, id_user, profile_UID, two_sided, mainUser, auto_type, auto_day, auto_time);
         }
 
-        private int insertFolder(string name, string path, DateTime changeTime, long weight)
+        private int insertFolder(string name, string path)
         {
             string sql = "INSERT INTO Folders (folder_name, folder_path) " +
              "VALUES (@folder_name, @folder_path); SELECT last_insert_rowid();";
@@ -229,28 +247,34 @@ namespace vkrSynchroFile
             return lastInsertedId;
         }
 
-        private void insertProfile(int id1, int id2, bool two_sided)
+        private void insertProfile(int id1, int id2, bool two_sided, bool auto_type, string auto_day, string auto_time)
         {
             connection.Open();
-            string sql = "INSERT INTO PC_Profiles (folder1, folder2, two_sided) VALUES (@folder1, @folder2, @two_sided);";
+            string sql = "INSERT INTO PC_Profiles (folder1, folder2, two_sided, auto_type, auto_day, auto_time) VALUES (@folder1, @folder2, @two_sided, @auto_type, @auto_day, @auto_time);";
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.Parameters.AddWithValue("@folder1", id1);
             cmd.Parameters.AddWithValue("@folder2", id2);
             cmd.Parameters.AddWithValue("@two_sided", two_sided);
+            cmd.Parameters.AddWithValue("@auto_type", auto_type);
+            cmd.Parameters.AddWithValue("@auto_day", auto_day);
+            cmd.Parameters.AddWithValue("@auto_time", auto_time);
             cmd.ExecuteNonQuery();
             connection.Close();
         }
 
-        private void insertInternetProfile(int id, string id_user, string profile_UID, bool two_sided, bool mainUser)
+        private void insertInternetProfile(int id, string id_user, string profile_UID, bool two_sided, bool mainUser, bool auto_type, string auto_day, string auto_time)
         {
             connection.Open();
-            string sql = "INSERT INTO Internet_Profiles (folder, id_user, profile_UID, two_sided, mainUser) VALUES (@folder, @id_user, @profile_UID, @two_sided, @mainUser);";
+            string sql = "INSERT INTO Internet_Profiles (folder, id_user, profile_UID, two_sided, mainUser, auto_type, auto_day, auto_time) VALUES (@folder, @id_user, @profile_UID, @two_sided, @mainUser, @auto_type, @auto_day, @auto_time);";
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.Parameters.AddWithValue("@folder", id);
             cmd.Parameters.AddWithValue("@id_user", id_user);
             cmd.Parameters.AddWithValue("@profile_UID", profile_UID);
             cmd.Parameters.AddWithValue("@two_sided", two_sided);
             cmd.Parameters.AddWithValue("@mainUser", mainUser);
+            cmd.Parameters.AddWithValue("@auto_type", auto_type);
+            cmd.Parameters.AddWithValue("@auto_day", auto_day);
+            cmd.Parameters.AddWithValue("@auto_time", auto_time);
             cmd.ExecuteNonQuery();
             connection.Close();
         }
@@ -335,14 +359,13 @@ namespace vkrSynchroFile
             updateFolder(folderId, name, path);
         }
 
-
         public void updateDB_PC(int profile_id, bool two_sided,
             int folder1Id, string name1, string path1,
-            int folder2Id, string name2, string path2)
+            int folder2Id, string name2, string path2, bool auto_type, string auto_day, string auto_time)
         {
             updateFolder(folder1Id, name1, path1);
             updateFolder(folder2Id, name2, path2);
-            updateProfile(profile_id, two_sided);
+            updateProfile(profile_id, two_sided, auto_type, auto_day, auto_time);
         }
 
         private void updateFolder(int id, string name, string path)
@@ -361,16 +384,22 @@ namespace vkrSynchroFile
             connection.Close();
         }
 
-        private void updateProfile(int profile_id, bool two_sided)
+        private void updateProfile(int profile_id, bool two_sided, bool auto_type, string auto_day, string auto_time)
         {
             string sql = "UPDATE PC_Profiles SET " +
-                "two_sided = @two_sided " +
+                "two_sided = @two_sided, " +
+                "auto_type = @auto_type, " +
+                "auto_day = @auto_day, " +
+                "auto_time = @auto_time, " +
                 "WHERE " +
                 "id_profile = @id_profile;";
             connection.Open();
             SQLiteCommand cmd = new SQLiteCommand(sql, connection);
             cmd.Parameters.AddWithValue("@two_sided", two_sided);
             cmd.Parameters.AddWithValue("@id_profile", profile_id);
+            cmd.Parameters.AddWithValue("@auto_type", auto_type);
+            cmd.Parameters.AddWithValue("@auto_day", auto_day);
+            cmd.Parameters.AddWithValue("@auto_time", auto_time);
             int rowsAffected = cmd.ExecuteNonQuery();
             connection.Close();
         }

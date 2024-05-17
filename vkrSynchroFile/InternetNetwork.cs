@@ -11,13 +11,6 @@ namespace vkrSynchroFile
 {
     internal class InternetNetwork
     {
-        private MainWindow mainWindowInstance; // Поле для хранения ссылки на экземпляр MainWindow
-
-        public InternetNetwork(MainWindow mainWindow)
-        {
-            mainWindowInstance = mainWindow;
-        }
-
         public InternetNetwork()
         {
         }
@@ -40,7 +33,7 @@ namespace vkrSynchroFile
         }
 
         // Отправка запроса на второе устройство для создания профиля
-        public Request SendProfile(string ip, bool synhroMode)
+        public Request SendProfile(string ip, bool synhroMode, bool auto_type, string auto_day, string auto_time)
         {
             try
             {
@@ -61,7 +54,10 @@ namespace vkrSynchroFile
                     {
                         Type = 1,
                         uid = myUID,
-                        synhroMode = synhroMode
+                        synhroMode = synhroMode,
+                        auto_type = auto_type,
+                        auto_day = auto_day,
+                        auto_time = auto_time
                     };
 
                     // Преобразование объекта запроса в JSON
@@ -642,7 +638,7 @@ namespace vkrSynchroFile
 
                                 SQLiteManager db = new SQLiteManager();
                                 DirectoryInfo directoryInfo = new DirectoryInfo(internet_SelectSecondFolder.folderpath);
-                                db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, directoryInfo.LastWriteTime, directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length), request.uid, internet_SelectSecondFolder.uniqueId, false);
+                                db.insertInternetDB(request.synhroMode, directoryInfo.Name, directoryInfo.FullName, request.uid, internet_SelectSecondFolder.uniqueId, false, request.auto_type, request.auto_day, request.auto_time);
                                 string myUID = InternetProfileMethods.myUserUID();
                                 Request newRequest = new Request
                                 {

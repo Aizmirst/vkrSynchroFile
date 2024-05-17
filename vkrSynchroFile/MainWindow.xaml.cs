@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using Path = System.IO.Path;
 using Timer = System.Timers.Timer;
 
@@ -24,7 +26,7 @@ namespace vkrSynchroFile
             InitializeComponent();
             dbLite = new SQLiteManager();
             dbMySQL = new MySqlManager();
-            internetNetwork = new InternetNetwork(this);
+            internetNetwork = new InternetNetwork();
             internetNetwork.StartServer();
             TableUpdate();
 
@@ -99,6 +101,54 @@ namespace vkrSynchroFile
                 foreach (ListItem item in itemListBox.Items)
                 {
                     Synchro(item);
+                }
+            }
+            foreach (ListItem item in itemListBox.Items)
+            {
+                string[] days = item.auto_time.Trim().Split(" ");
+                string[] time = item.auto_time.Trim().Split(":");
+                if (!item.auto_type)
+                {
+                    // Получение текущего дня недели
+                    DayOfWeek currentDayOfWeek = DateTime.Now.DayOfWeek;
+
+                    // Преобразование текущего дня недели в строку на русском языке
+                    string currentDayString = currentDayOfWeek switch
+                    {
+                        DayOfWeek.Sunday => "Вс",
+                        DayOfWeek.Monday => "Пн",
+                        DayOfWeek.Tuesday => "Вт",
+                        DayOfWeek.Wednesday => "Ср",
+                        DayOfWeek.Thursday => "Чт",
+                        DayOfWeek.Friday => "Пт",
+                        DayOfWeek.Saturday => "Сб",
+                        _ => ""
+                    };
+                    // Проверка, выбран ли текущий день недели
+                    bool isCurrentDaySelected = days.Contains(currentDayString);
+                    if (isCurrentDaySelected)
+                    {
+                        if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
+                        {
+                            Synchro(item);
+                        }
+                    }
+                }
+                else
+                {
+                    // Получение текущей даты
+                    DateTime currentDate = DateTime.Now.Date;
+                    // Преобразование строк дат в объекты DateTime
+                    DateTime[] dateObjects = days.Select(dateString => DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture)).ToArray();
+                    // Проверка, содержится ли текущая дата в списке выбранных дат
+                    bool isCurrentDateSelected = dateObjects.Contains(currentDate);
+                    if (isCurrentDateSelected)
+                    {
+                        if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
+                        {
+                            Synchro(item);
+                        }
+                    }
                 }
             }
         }
