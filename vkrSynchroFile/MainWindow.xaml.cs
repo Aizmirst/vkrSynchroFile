@@ -93,19 +93,9 @@ namespace vkrSynchroFile
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            // Получаем текущее время
-            DateTime currentTime = DateTime.Now;
-
-            if ((currentTime.Hour == 0 && currentTime.Minute == 0) || (currentTime.Hour == 12 && currentTime.Minute == 0))
-            {
-                foreach (ListItem item in itemListBox.Items)
-                {
-                    Synchro(item);
-                }
-            }
             foreach (ListItem item in itemListBox.Items)
             {
-                string[] days = item.auto_time.Trim().Split(" ");
+                string[] days = item.auto_day.Trim().Split(" ");
                 string[] time = item.auto_time.Trim().Split(":");
                 if (!item.auto_type)
                 {
@@ -128,6 +118,8 @@ namespace vkrSynchroFile
                     bool isCurrentDaySelected = days.Contains(currentDayString);
                     if (isCurrentDaySelected)
                     {
+                        // Получаем текущее время
+                        DateTime currentTime = DateTime.Now;
                         if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
                         {
                             if(item.profType == 3 && item.mainUser == false)
@@ -150,6 +142,8 @@ namespace vkrSynchroFile
                     bool isCurrentDateSelected = dateObjects.Contains(currentDate);
                     if (isCurrentDateSelected)
                     {
+                        // Получаем текущее время
+                        DateTime currentTime = DateTime.Now;
                         if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
                         {
                             if (item.profType == 3 && item.mainUser == false)
