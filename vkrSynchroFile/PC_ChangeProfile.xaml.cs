@@ -185,7 +185,7 @@ namespace vkrSynchroFile
                 }
                 string selectedHour = (hoursComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
                 string selectedMinute = (minutesComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-                string autoTime = selectedHour + " " + selectedMinute;
+                string autoTime = selectedHour + ":" + selectedMinute;
                 db.updateDB_PC(profileID, synhroMode,
                     folder1ID, directoryInfo1.Name, directoryInfo1.FullName,
                     folder2ID, directoryInfo2.Name, directoryInfo2.FullName, autoType, autoDay, autoTime);

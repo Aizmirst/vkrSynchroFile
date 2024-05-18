@@ -390,7 +390,7 @@ namespace vkrSynchroFile
                 "two_sided = @two_sided, " +
                 "auto_type = @auto_type, " +
                 "auto_day = @auto_day, " +
-                "auto_time = @auto_time, " +
+                "auto_time = @auto_time " +
                 "WHERE " +
                 "id_profile = @id_profile;";
             connection.Open();

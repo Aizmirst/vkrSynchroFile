@@ -137,9 +137,9 @@ namespace vkrSynchroFile
                     // Получение текущей даты
                     DateTime currentDate = DateTime.Now.Date;
                     // Преобразование строк дат в объекты DateTime
-                    DateTime[] dateObjects = days.Select(dateString => DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture)).ToArray();
+                    DateTime[] selectedDates = days.Select(date => DateTime.ParseExact(date, "dd.MM.yyyy", null)).ToArray();
                     // Проверка, содержится ли текущая дата в списке выбранных дат
-                    bool isCurrentDateSelected = dateObjects.Contains(currentDate);
+                    bool isCurrentDateSelected = selectedDates.Contains(currentDate);
                     if (isCurrentDateSelected)
                     {
                         // Получаем текущее время
