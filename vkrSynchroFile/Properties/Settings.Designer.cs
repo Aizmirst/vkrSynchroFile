@@ -48,5 +48,29 @@ namespace vkrSynchroFile.Properties {
                 this["newconnectionString"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("yqjC7d7yX74N7bxp6yJRuG9SwGcK0E3UB5FtNSe+1QI=")]
+        public string aesKey {
+            get {
+                return ((string)(this["aesKey"]));
+            }
+            set {
+                this["aesKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6U6+w5CY4xhlOqGBThTtRw==")]
+        public string aesIV {
+            get {
+                return ((string)(this["aesIV"]));
+            }
+            set {
+                this["aesIV"] = value;
+            }
+        }
     }
 }

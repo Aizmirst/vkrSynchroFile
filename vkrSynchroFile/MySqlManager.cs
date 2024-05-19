@@ -1,5 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
+using System.Xml;
 
 namespace vkrSynchroFile
 {
@@ -51,8 +55,10 @@ namespace vkrSynchroFile
             {
                 connection.Open();
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@ip", ip);
-                cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
+                string encryptIP = EncryptString(ip);
+                string encryptUID = EncryptString(uniqueID);
+                cmd.Parameters.AddWithValue("@ip", encryptIP);
+                cmd.Parameters.AddWithValue("@uniqueID", encryptUID);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -72,8 +78,10 @@ namespace vkrSynchroFile
             {
                 connection.Open();
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@ip", ip);
-                cmd.Parameters.AddWithValue("@uniqueID", uniqueID);
+                string encryptIP = EncryptString(ip);
+                string encryptUID = EncryptString(uniqueID);
+                cmd.Parameters.AddWithValue("@ip", encryptIP);
+                cmd.Parameters.AddWithValue("@uniqueID", encryptUID);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -95,7 +103,8 @@ namespace vkrSynchroFile
             {
                 connection.Open();
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@uniqueID", uid);
+                string encryptUID = EncryptString(uid);
+                cmd.Parameters.AddWithValue("@uniqueID", encryptUID);
                 object resultObj = cmd.ExecuteScalar();
 
                 if (resultObj != DBNull.Value && resultObj != null)
@@ -122,12 +131,13 @@ namespace vkrSynchroFile
             {
                 connection.Open();
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@uniqueID", uid);
+                string encryptUID = EncryptString(uid);
+                cmd.Parameters.AddWithValue("@uniqueID", encryptUID);
                 object resultObj = cmd.ExecuteScalar();
 
                 if (resultObj != null)
                 {
-                    ip = resultObj.ToString();
+                    ip = DecryptString(resultObj.ToString());
                 }
             }
             catch (Exception ex)
@@ -140,6 +150,51 @@ namespace vkrSynchroFile
             }
 
             return ip;
+        }
+
+        private static readonly string key = Properties.Settings.Default.aesKey; // 32 байта для AES-256
+        private static readonly string iv = Properties.Settings.Default.aesIV; // 16 байт для AES
+
+        public static string EncryptString(string plainText)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Convert.FromBase64String(key);
+                aesAlg.IV = Convert.FromBase64String(iv);
+
+                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (var msEncrypt = new MemoryStream())
+                {
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var swEncrypt = new StreamWriter(csEncrypt))
+                    {
+                        swEncrypt.Write(plainText);
+                    }
+
+                    return Convert.ToBase64String(msEncrypt.ToArray());
+                }
+            }
+        }
+
+        public static string DecryptString(string cipherText)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Convert.FromBase64String(key);
+                aesAlg.IV = Convert.FromBase64String(iv);
+
+                var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                {
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (var srDecrypt = new StreamReader(csDecrypt))
+                    {
+                        return srDecrypt.ReadToEnd();
+                    }
+                }
+            }
         }
     }
 }

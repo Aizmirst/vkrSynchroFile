@@ -8,5 +8,11 @@
     <Setting Name="newconnectionString" Type="System.String" Scope="User">
       <Value Profile="(Default)">server=otleraram.beget.app; port=3306; user=default-db; database=default-db; password=wRGvFg9EQ&amp;ru;</Value>
     </Setting>
+    <Setting Name="aesKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">yqjC7d7yX74N7bxp6yJRuG9SwGcK0E3UB5FtNSe+1QI=</Value>
+    </Setting>
+    <Setting Name="aesIV" Type="System.String" Scope="User">
+      <Value Profile="(Default)">6U6+w5CY4xhlOqGBThTtRw==</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
