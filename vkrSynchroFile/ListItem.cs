@@ -5,8 +5,10 @@
         // Текст, отображаемый в список
         public string text { get; set; }
 
+        // номер профиля в списке
+        public int profile_number { get; set; }
 
-        // Пример скрытых переменных, которые вы хотите добавить к элементам списка
+        // id профиля в бд
         public int profile_id { get; set; }
 
         // Данные папки 1

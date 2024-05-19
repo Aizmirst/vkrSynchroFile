@@ -17,6 +17,7 @@
             <Button Content="Создать профиль" Margin="15,40,15,0" Height="30" VerticalAlignment="Top" Click="CreateProfileButton_Click"/>
             <Button Content="Изменить профиль" Margin="15,90,15,0" Height="30" VerticalAlignment="Top" Click="ChangeProfileButton_Click"/>
             <Button Content="Удалить профиль" Margin="15,140,15,0" Height="30" VerticalAlignment="Top" Click="DeleteProfileButton_Click"/>
+            <Button Content="Подробнее" Margin="15,190,15,0" Height="30" VerticalAlignment="Top" Click="ProfileInfoButton_Click"/>
             <Button Content="Синхронизировать" Margin="15,0,15,20" Height="30" VerticalAlignment="Bottom" Click="SynchroFileButton"/>
         </Grid>
 

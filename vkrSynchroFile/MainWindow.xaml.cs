@@ -268,6 +268,18 @@ namespace vkrSynchroFile
             }
         }
 
+        private void ProfileInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Проверяем, есть ли выбранный элемент
+            if (itemListBox.SelectedItem != null)
+            {
+                // Приводим выбранный элемент к типу вашего класса Item
+                ListItem selectedItem = (ListItem)itemListBox.SelectedItem;
+                ProfileInfo profileInfoWindow = new ProfileInfo(selectedItem);
+                profileInfoWindow.ShowDialog();
+            }
+        }
+
         private void SynchroFileButton(object sender, RoutedEventArgs e)
         {
             // Проверяем, есть ли выбранный элемент
