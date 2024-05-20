@@ -13,7 +13,7 @@
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <TextBlock Text="Выберите тип профиля для синхронизации:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="Выберите тип профиля для синхронизации:" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="1">
             <StackPanel>

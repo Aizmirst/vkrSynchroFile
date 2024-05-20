@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vkrSynchroFile"
         mc:Ignorable="d"
-        Title="Internet_ChangeProfile" Height="250" Width="370" ResizeMode="NoResize">
+        Title="Изменение профиля" Height="250" Width="370" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <TextBlock x:Name="TitleTextBlock" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0">
+            <TextBlock x:Name="TitleTextBlock" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="14">
                 Вы хотите изменить папку синхронизации?
                 <LineBreak/>
                 Выберите новый путь для папки.

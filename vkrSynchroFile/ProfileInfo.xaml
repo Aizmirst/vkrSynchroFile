@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="ProfileInfo" Height="450" Width="370" MinHeight="450" MinWidth="370">
     <Grid>
-        <TextBox HorizontalAlignment="Center" HorizontalContentAlignment="Center" Margin="0,20,0,0" Name="profTitle" Text="Параметры профиля" VerticalAlignment="Top" Width="220"/>
-        <TextBox HorizontalAlignment="Center" Margin="0,60,0,0" TextWrapping="Wrap" Text="" Name="profInfo" VerticalAlignment="Top" Width="260" HorizontalContentAlignment="Left"/>
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0,20,0,0" Name="profTitle" Text="Параметры профиля" VerticalAlignment="Top" Width="220" FontSize="14"/>
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Left" Margin="0,60,0,0" TextWrapping="Wrap" Text="" Name="profInfo" VerticalAlignment="Top" Width="260"/>
     </Grid>
 </Window>

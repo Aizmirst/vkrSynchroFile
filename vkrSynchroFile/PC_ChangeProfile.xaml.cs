@@ -153,7 +153,7 @@ namespace vkrSynchroFile
             }
         }
 
-        private void CreateProfileClick(object sender, RoutedEventArgs e)
+        private void ChangeProfileClick(object sender, RoutedEventArgs e)
         {
 
             if (folder1name != null && folder2name != null)
@@ -195,6 +195,11 @@ namespace vkrSynchroFile
             {
                 MessageBox.Show("Ошибка!");
             }
+        }
+
+        private void CancelClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         public string[] GetFolderInfo(string folderPath)

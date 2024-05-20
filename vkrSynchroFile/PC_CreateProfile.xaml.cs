@@ -125,6 +125,11 @@ namespace vkrSynchroFile
             }
         }
 
+        private void CancelClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         public string[] GetFolderInfo(string folderPath)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(folderPath);
