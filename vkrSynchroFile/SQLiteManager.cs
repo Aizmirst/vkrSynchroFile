@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Data.SQLite;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace vkrSynchroFile
 {
@@ -147,6 +148,7 @@ namespace vkrSynchroFile
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
+                string mode = reader.GetBoolean(7) ? "Двусторонняя синхронизация" : "Односторонняя синхронизация";
                 items.Add(new ListItem()
                 {
                     profile_id = reader.GetInt32(0),
@@ -156,7 +158,7 @@ namespace vkrSynchroFile
                     userUID = reader.GetString(4),
                     profileUID = reader.GetString(5),
                     profile_number = startProfileNumber,
-                    text = $"Профиль №{startProfileNumber}. Тип: По локальной сети. UID: {reader.GetString(5)}",
+                    text = $"Профиль №{startProfileNumber}.\nТип: По локальной сети.\nUID профиля: {reader.GetString(5)}\n\nРежим синхронизации: {mode}Папка: {reader.GetString(2)}\nВтороей устройство: {reader.GetString(4)}",
                     profType = 3,
                     profMode = reader.GetBoolean(6),
                     mainUser = reader.GetBoolean(7),
@@ -198,6 +200,7 @@ namespace vkrSynchroFile
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
+                string mode = reader.GetBoolean(7) ? "Двусторонняя синхронизация" : "Односторонняя синхронизация";
                 items.Add(new ListItem()
                 {
                     profile_id = reader.GetInt32(0),
@@ -208,7 +211,7 @@ namespace vkrSynchroFile
                     folder2name = reader.GetString(5),
                     folder2path = reader.GetString(6),
                     profile_number = startProfileNumber,
-                    text = $"Профиль №{startProfileNumber}. Тип: Внутри 1 ПК.",
+                    text = $"Профиль №{startProfileNumber}.\nТип: Внутри одного устройства.\nРежим синхронизации: {mode}\nПервая папка: {reader.GetString(2)}\nВторая папка: {reader.GetString(5)}",
                     profType = 1,
                     profMode = reader.GetBoolean(7),
                     auto_type = reader.GetBoolean(8),

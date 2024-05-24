@@ -5,21 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vkrSynchroFile"
         mc:Ignorable="d"
-        Title="SynchroFile" Height="450" Width="800" MinHeight="305" MinWidth="800">
+        Title="SynchroFile" Height="450" Width="800" MinHeight="330" MinWidth="750">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Левая часть -->
         <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,0">
             <Grid Grid.Column="0">
-                <Button Content="Создать профиль" Margin="15,40,15,0" Height="30" VerticalAlignment="Top" Click="CreateProfileButton_Click"/>
-                <Button Content="Изменить профиль" Margin="15,90,15,0" Height="30" VerticalAlignment="Top" Click="ChangeProfileButton_Click"/>
-                <Button Content="Удалить профиль" Margin="15,140,15,0" Height="30" VerticalAlignment="Top" Click="DeleteProfileButton_Click"/>
-                <Button Content="Подробнее" Margin="15,190,15,0" Height="30" VerticalAlignment="Top" Click="ProfileInfoButton_Click"/>
-                <Button Content="Синхронизировать" Margin="15,0,15,20" Height="30" VerticalAlignment="Bottom" Click="SynchroFileButton"/>
+                <Button Margin="15,40,15,0" Height="30" VerticalAlignment="Top" Click="CreateProfileButton_Click">
+                    <StackPanel Orientation="Horizontal" Width="160">
+                        <Image Source="Resources/add.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="10,0,10,0"/>
+                        <TextBlock Text="Создать профиль" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="15,90,15,0" Height="30" VerticalAlignment="Top" Click="ChangeProfileButton_Click">
+                    <StackPanel Orientation="Horizontal" Width="160">
+                        <Image Source="Resources/change.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="10,0,10,0"/>
+                        <TextBlock Text="Изменить профиль" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="15,140,15,0" Height="30" VerticalAlignment="Top" Click="DeleteProfileButton_Click">
+                    <StackPanel Orientation="Horizontal" Width="160">
+                        <Image Source="Resources/delete.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="10,0,10,0"/>
+                        <TextBlock Text="Удалить профиль" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="15,190,15,0" Height="30" VerticalAlignment="Top" Click="ProfileInfoButton_Click">
+                    <StackPanel Orientation="Horizontal" Width="160">
+                        <Image Source="Resources/open.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="10,0,10,0"/>
+                        <TextBlock Text="Подробнее" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="15,0,15,20" Height="30" VerticalAlignment="Bottom" Click="SynchroFileButton">
+                    <StackPanel Orientation="Horizontal" Width="160">
+                        <Image Source="Resources/synchro.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="10,0,10,0"/>
+                        <TextBlock Text="Синхронизировать" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
 
@@ -29,12 +54,26 @@
                 <!-- Список -->
                 <ListBox x:Name="itemListBox"
                      SelectionMode="Single" Margin="20,40,20,20">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="BorderBrush" Value="Black" />
+                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="BorderBrush" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Padding" Value="5"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <!-- В этой части вы можете кастомизировать отображение элементов списка -->
                             <StackPanel>
                                 <!-- Привязка данных к отображаемым свойствам -->
-                                <TextBlock Text="{Binding text}" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding text}" TextWrapping="Wrap" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

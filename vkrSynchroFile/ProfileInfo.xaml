@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vkrSynchroFile"
         mc:Ignorable="d"
-        Title="ProfileInfo" Height="450" Width="370" MinHeight="450" MinWidth="370">
+        Title="ProfileInfo" Height="400" Width="370" MinHeight="400" MinWidth="370">
     <Grid>
         <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0,20,0,0" Name="profTitle" Text="Параметры профиля" VerticalAlignment="Top" Width="220" FontSize="14"/>
         <TextBlock HorizontalAlignment="Center" TextAlignment="Left" Margin="0,60,0,0" TextWrapping="Wrap" Text="" Name="profInfo" VerticalAlignment="Top" Width="260"/>

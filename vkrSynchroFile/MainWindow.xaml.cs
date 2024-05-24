@@ -29,6 +29,13 @@ namespace vkrSynchroFile
             internetNetwork = new InternetNetwork();
             internetNetwork.StartServer();
             TableUpdate();
+            /*for(int i = 0; i < 10; i++)
+            {
+                itemListBox.Items.Add(new ListItem()
+                {
+                    text = "ttt \n lll"
+                });
+            }*/
 
             uniqueId = "";
             if (IsFirstRun())
@@ -95,9 +102,9 @@ namespace vkrSynchroFile
         {
             foreach (ListItem item in itemListBox.Items)
             {
-                string[] days = item.auto_day.Trim().Split(" ");
-                string[] time = item.auto_time.Trim().Split(":");
-                if (!item.auto_type)
+                string[] days = item.auto_day != null ? item.auto_day.Trim().Split(" ") : null;
+                string[] time = item.auto_time != null ? item.auto_time.Trim().Split(":") : null;
+                if (!item.auto_type && days != null)
                 {
                     // Получение текущего дня недели
                     DayOfWeek currentDayOfWeek = DateTime.Now.DayOfWeek;
@@ -134,24 +141,27 @@ namespace vkrSynchroFile
                 }
                 else
                 {
-                    // Получение текущей даты
-                    DateTime currentDate = DateTime.Now.Date;
-                    // Преобразование строк дат в объекты DateTime
-                    DateTime[] selectedDates = days.Select(date => DateTime.ParseExact(date, "dd.MM.yyyy", null)).ToArray();
-                    // Проверка, содержится ли текущая дата в списке выбранных дат
-                    bool isCurrentDateSelected = selectedDates.Contains(currentDate);
-                    if (isCurrentDateSelected)
+                    if(days != null)
                     {
-                        // Получаем текущее время
-                        DateTime currentTime = DateTime.Now;
-                        if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
+                        // Получение текущей даты
+                        DateTime currentDate = DateTime.Now.Date;
+                        // Преобразование строк дат в объекты DateTime
+                        DateTime[] selectedDates = days.Select(date => DateTime.ParseExact(date, "dd.MM.yyyy", null)).ToArray();
+                        // Проверка, содержится ли текущая дата в списке выбранных дат
+                        bool isCurrentDateSelected = selectedDates.Contains(currentDate);
+                        if (isCurrentDateSelected)
                         {
-                            if (item.profType == 3 && item.mainUser == false)
+                            // Получаем текущее время
+                            DateTime currentTime = DateTime.Now;
+                            if (currentTime.Hour == int.Parse(time[0]) && currentTime.Minute == int.Parse(time[1]))
                             {
-                            }
-                            else
-                            {
-                                Synchro(item);
+                                if (item.profType == 3 && item.mainUser == false)
+                                {
+                                }
+                                else
+                                {
+                                    Synchro(item);
+                                }
                             }
                         }
                     }
@@ -177,8 +187,13 @@ namespace vkrSynchroFile
         public void TableUpdate()
         {
             ObservableCollection<ListItem> items = new ObservableCollection<ListItem>();
+            itemListBox.Items.Clear();
             items = dbLite.readDBforTable();
-            itemListBox.ItemsSource = items;
+            foreach (ListItem item in items)
+            {
+                itemListBox.Items.Add(item);
+            }
+            //itemListBox.ItemsSource = items;
         }
 
         private void TableUpdateButton(object sender, RoutedEventArgs e)
