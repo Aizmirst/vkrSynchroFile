@@ -158,7 +158,7 @@ namespace vkrSynchroFile
                     userUID = reader.GetString(4),
                     profileUID = reader.GetString(5),
                     profile_number = startProfileNumber,
-                    text = $"Профиль №{startProfileNumber}.\nТип: По локальной сети.\nUID профиля: {reader.GetString(5)}\n\nРежим синхронизации: {mode}Папка: {reader.GetString(2)}\nВтороей устройство: {reader.GetString(4)}",
+                    text = $"Профиль №{startProfileNumber}.\nТип: По локальной сети.\nUID профиля: {reader.GetString(5)}\nРежим синхронизации: {mode}\nПапка: {reader.GetString(2)}\nВтороей устройство: {reader.GetString(4)}",
                     profType = 3,
                     profMode = reader.GetBoolean(6),
                     mainUser = reader.GetBoolean(7),
